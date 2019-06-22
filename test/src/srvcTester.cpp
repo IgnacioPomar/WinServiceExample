@@ -1,6 +1,6 @@
 ﻿
 
-#include "SrvcEjemplo.h"
+#include "srvcTester.h"
 
 
 //Funciones "Simples" que devuelven información constante del servicio

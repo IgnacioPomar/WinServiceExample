@@ -8,6 +8,7 @@
 #define _PRAGMA_LIB_CTRL_PRESENCIA_H_
 
 
+#include "srvcTesterCfg.h"
 
 #ifdef _DEBUG 
 #define END_LIB_STD "d.lib"
@@ -17,8 +18,9 @@
 
 
 // Libraries the project needs
-#pragma comment(lib, "libreriaServicio" END_LIB_STD)
+#pragma comment(lib, "libOS" END_LIB_STD)
 
+#ifdef WEB_SERVICE
 
 #ifdef _DEBUG 
 #pragma comment(lib, "libmicrohttpd-dll_d.lib")
@@ -26,6 +28,8 @@
 #pragma comment(lib, "libmicrohttpd-dll.lib")
 #endif
 
+
+#endif //WEB_SERVICE
 
 
 

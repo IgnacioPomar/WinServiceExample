@@ -1,7 +1,8 @@
 
 
-#include "SrvcEjepmploServidorWeb.h"
+#include "srvcTesterWeb.h"
 
+#ifdef WEB_SERVICE
 
 //Funciones "Simples" que devuelven información constante del servicio
 const char* SrvcEjepmploServidorWeb::getName ()
@@ -162,5 +163,5 @@ int SrvcEjepmploServidorWeb::webServiceMain (void * srvcEjemplo, MHD_Connection 
 	return ret;
 }
 
-
+#endif //WEB_SERVICE
 

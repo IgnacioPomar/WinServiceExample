@@ -35,7 +35,7 @@
     <ClInclude Include="..\include\WinSrvcUtls.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="libreriaServicio_cfg.h">
+    <ClInclude Include="..\include\libreriaServicio_cfg.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

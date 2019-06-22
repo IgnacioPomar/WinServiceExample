@@ -2,15 +2,16 @@
 #include <cstdio>
 #include <Windows.h>
 
-#include "SrvcEjemplo_pragmalib.h"
+#include "srvcTesterCfg.h"
+#include "srvcTester_pragmalib.h"
 
 #include "WinSrvc.h"
 
-#include "SrvcEjemplo.h"
-#include "SrvcEjepmploServidorWeb.h"
+#include "srvcTester.h"
+#include "srvcTesterWeb.h"
 
 
-#define WEB_SERVICE
+
 
 
 /*

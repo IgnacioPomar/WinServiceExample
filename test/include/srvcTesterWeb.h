@@ -9,6 +9,10 @@
 #ifndef _SERVICE_EJEMPLO_WEB_H_
 #define _SERVICE_EJEMPLO_WEB_H_
 
+
+#include "srvcTesterCfg.h"
+
+#ifdef WEB_SERVICE
 #include "winSrvcBase.h"
 
 //prototipos necesarios para evitar includes
@@ -62,5 +66,7 @@ public:
 
 };
 
+
+#endif //WEB_SERVICE
 
 #endif //_SERVICE_EJEMPLO_WEB_H_

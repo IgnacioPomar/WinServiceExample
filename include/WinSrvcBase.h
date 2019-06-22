@@ -9,10 +9,10 @@
 #ifndef _WIN_SERVICES_BASE_H_
 #define _WIN_SERVICES_BASE_H_
 
-#include "libreriaServicio_cfg.h"
+#include "libOS_cfg.h"
 
 
-class LIBRERIASERVICIO_API WinSrvcBase
+class LIBOS_API WinSrvcBase
 {
 public:
 	//Metodos que dan información sobre este servicio concreto

@@ -1,0 +1,5 @@
+links with useful documentation:
+https://docs.microsoft.com/es-es/windows/desktop/api/winsvc/nf-winsvc-registerservicectrlhandlerexa
+https://docs.microsoft.com/es-es/windows/desktop/api/winsvc/nc-winsvc-lphandler_function_ex
+
+https://www.gnu.org/software/libmicrohttpd/

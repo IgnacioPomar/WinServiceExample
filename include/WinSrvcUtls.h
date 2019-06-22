@@ -10,9 +10,9 @@
 #define _WIN_SERVICES_UTILS_H_
 
 //#include <Windows.h>
-#include "libreriaServicio_cfg.h"
+#include "libOS_cfg.h"
 
-class LIBRERIASERVICIO_API WinSrvcUtls
+class LIBOS_API WinSrvcUtls
 {
 public:
 	static bool install (const char* serviceName, const char* displayName,
