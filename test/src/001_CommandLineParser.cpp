@@ -4,6 +4,7 @@
 *	Copyright	(C) 2018  GRANTIA CAPITAL, SGIIC, S.A.
 ********************************************************************************************/
 
+#include <string>
 #include <TinyCppUnit/TinyCppUnit.h>
 
 #include "CommandLineParser.h"
@@ -37,7 +38,7 @@ UNIT_TEST_CASE (TestCommandLineParser)
 		cmdLine.addOption ("fi", "fifth", "optional parameter (fifth)", false);
 
 
-		const char * argvSuccess[] = { "exe", "-f", "--second=a,b", "/t", "something" , "--fi" };
+		const char * argvSuccess[] = { "exe", "-f", "/t", "something" , "--fi", "--second=a,b" };
 		UNIT_CHECK (cmdLine.parse (arrlen (argvSuccess), argvSuccess));
 
 		cmdLine.reset ();
@@ -51,35 +52,52 @@ UNIT_TEST_CASE (TestCommandLineParser)
 		cmdLine.reset ();
 		const char * argvFail_3[] = { "exe", "-t=a", "-f", "-s" };
 		UNIT_CHECK (!cmdLine.parse (arrlen (argvFail_1), argvFail_1));
-
-		//
-
 	}
-	/*
-	//Windows like options (ie.dir /a c:\path)
+
+
+
+	//Retrieve options and values
 	{
 		CommandLineParser cmdLine;
-		cmdLine.addOption ("q", "owner", "show the file Owner");
+		cmdLine.addOption ("a", "", "set");
+		cmdLine.addOption ("b", "", "not set");
+		cmdLine.addOption ("c", "", "", false, 2);
+		cmdLine.addOption ("d", "", "", false, 1);
+		cmdLine.addOption ("e", "", "", false, -1);
 
-		const char * argv[] = {"exe", "/q", "c:\\path"};
-		cmdLine.parse (3, argv);
+		const char * argv[] = { "execName", "-a", "-e", "val1", "val2", "val3", "-d", "val1", "extra1", "--c=val1,val2", "extra2" , "extra3" };
+		UNIT_CHECK (cmdLine.parse (arrlen (argv), argv));
+
+		UNIT_CHECK (cmdLine.hasOption ("a"));
+		UNIT_CHECK (!cmdLine.hasOption ("b"));
+
+		UNIT_CHECK (2 == cmdLine.getNumOptionValues ("c"));
+		UNIT_CHECK (1 == cmdLine.getNumOptionValues ("d"));
+		UNIT_CHECK (3 == cmdLine.getNumOptionValues ("e"));
+		UNIT_CHECK (3 == cmdLine.getNumNameless ());
+
+		std::string val1 ("val1");
+		std::string val2 ("val2");
+		std::string val3 ("val3");
+		std::string extra1 ("extra1");
+		std::string extra2 ("extra2");
+		std::string extra3 ("extra3");
 
 
-		UNIT_CHECK (cmdLine.hasOption("q"));
+		UNIT_CHECK (0 == val1.compare (cmdLine.getOptionValue ("c")));
+		UNIT_CHECK (0 == val1.compare (cmdLine.getOptionValue ("d")));
+		UNIT_CHECK (0 == val1.compare (cmdLine.getOptionValue ("e")));
+
+		UNIT_CHECK (0 == val2.compare (cmdLine.getOptionValue ("c", 1)));
+		UNIT_CHECK (0 == val2.compare (cmdLine.getOptionValue ("e", 1)));
+
+		UNIT_CHECK (0 == val3.compare (cmdLine.getOptionValue ("e", 2)));
+
+		UNIT_CHECK (0 == extra1.compare (cmdLine.getNamelessValue ()));
+		UNIT_CHECK (0 == extra2.compare (cmdLine.getNamelessValue (1)));
+		UNIT_CHECK (0 == extra3.compare (cmdLine.getNamelessValue (2)));
 
 	}
-	*/
-
-
-
-	/*
-Windows like options (ie. dir /a c:\path)
-POSIX like options (ie. tar -zxvf foo.tar.gz)
-GNU like long options (ie. du --human-readable --max-depth=1)
-Short options with value attached (ie. gcc -O2 foo.c)
-long options with single hyphen (ie. ant -projecthelp)
-*/
-
 
 
 

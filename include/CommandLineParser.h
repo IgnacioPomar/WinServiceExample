@@ -9,6 +9,20 @@
 
 #include "libOS_cfg.h"
 
+/*
+Currently suports the following formats
+Windows like options (ie. dir /a c:\path)
+GNU like long options (ie. du --human-readable --max-depth=1)
+long options with single hyphen (ie. ant -projecthelp)
+
+
+//YAGNI: may be in the future suport for this formats
+POSIX like options (ie. tar -zxvf foo.tar.gz)
+Short options with value attached (ie. gcc -O2 foo.c)
+*/
+
+
+
 
 class CommandLineParserPrivateData;
 class Option;
@@ -34,8 +48,6 @@ public:
 	int getNumNameless ();
 	const char * getNamelessValue (int pos = 0);
 
-
-
 private:
 	CommandLineParserPrivateData * pd;
 
@@ -45,14 +57,6 @@ private:
 	Option * parseOpt (const char * cleanopt);
 
 };
-
-/*
-Windows like options (ie. dir /a c:\path)
-POSIX like options (ie. tar -zxvf foo.tar.gz)
-GNU like long options (ie. du --human-readable --max-depth=1)
-Short options with value attached (ie. gcc -O2 foo.c)
-long options with single hyphen (ie. ant -projecthelp)
-*/
 
 
 

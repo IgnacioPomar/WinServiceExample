@@ -206,11 +206,13 @@ bool CommandLineParser::parse (int argc, const char * argv[])
 	{
 		return checkOptions ();
 	}
+
+	//YAGNI: May be we must do a better search of the executable name
 	pd->argv_0 = argv[0];
 
+	Option * currOpt = nullptr;
 	for (int i = 1; i < argc; i++)
 	{
-		Option * currOpt = nullptr;
 		const char * cmd = argv[i];
 		bool isOpt = false;
 		int offset = 0;
@@ -287,15 +289,12 @@ Option * CommandLineParser::parseOpt (const char * cleanopt)
 		if (hasVals)
 		{
 			size_t pos = 0;
-			std::string token;
 			while ((pos = vals.find (VALUE_SEPARATOR)) != std::string::npos)
 			{
-				token = vals.substr (0, pos);
+				retVal->values.push_back (vals.substr (0, pos));
 				vals.erase (0, pos + 1); //token size plus Value separator size
-
-				retVal->values.push_back (token);
 			}
-			retVal->values.push_back (token);
+			retVal->values.push_back (vals);
 			retVal = nullptr;
 		}
 	}
