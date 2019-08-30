@@ -1,6 +1,6 @@
-/*********************************************************************************************
+ï»¿/*********************************************************************************************
 *	Name		: SrvcEjepmploServidorWeb.h
-*	Description	: Implementación de un servicio que interactue
+*	Description	: ImplementaciÃ³n de un servicio que interactue
 ********************************************************************************************/
 
 
@@ -10,7 +10,7 @@
 #define _SERVICE_EJEMPLO_WEB_H_
 
 
-#include "srvcTesterCfg.h"
+#include "srvcExampleCfg.h"
 
 #ifdef WEB_SERVICE
 #include "winSrvcBase.h"
@@ -20,7 +20,7 @@ struct MHD_Connection;
 struct MHD_Daemon;
 
 
-//Podría heredar de WinSrvcBaseEx si quisiesemos los extendidos
+//PodrÃ­a heredar de WinSrvcBaseEx si quisiesemos los extendidos
 class SrvcEjepmploServidorWeb : public WinSrvcBase
 {
 private:
@@ -30,7 +30,7 @@ private:
 	static constexpr const char * DESCRIPTION = "Servicio para demostrar el uso de como generar un servicio, dejando un servicio web";
 	static constexpr bool IS_MANUAL_MODE = true;
 	static constexpr int NUM_DEPENDENCIAS = 2;
-	static constexpr const char * DEPENDENCIAS [NUM_DEPENDENCIAS] = {"Netman", "nsi"}; //Necesitamos que haya arrancado la red correctamente
+	static constexpr const char * DEPENDENCIAS[NUM_DEPENDENCIAS] = { "Netman", "nsi" }; //Necesitamos que haya arrancado la red correctamente
 
 
 	//---- Constantes propias de este srevisio ----

@@ -27,6 +27,9 @@
     <ClInclude Include="..\include\libOS_cfg.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\CommandLineParser.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllmain.cpp">
@@ -36,6 +39,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\WinSrvcUtls.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\CommandLineParser.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

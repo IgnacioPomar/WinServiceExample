@@ -1,6 +1,6 @@
 ﻿
 
-#include "srvcTester.h"
+#include "srvcExample.h"
 
 
 //Funciones "Simples" que devuelven información constante del servicio
@@ -22,7 +22,7 @@ bool SrvcEjemplo::isManual ()
 }
 const char** SrvcEjemplo::getDepends ()
 {
-	return (const char **) SrvcEjemplo::DEPENDENCIAS;
+	return (const char **)SrvcEjemplo::DEPENDENCIAS;
 }
 int SrvcEjemplo::getNumDepends ()
 {
@@ -88,5 +88,3 @@ bool SrvcEjemplo::run ()
 
 	return true;
 }
-
-

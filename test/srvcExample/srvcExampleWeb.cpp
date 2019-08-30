@@ -1,10 +1,10 @@
+ï»¿
 
-
-#include "srvcTesterWeb.h"
+#include "srvcExampleWeb.h"
 
 #ifdef WEB_SERVICE
 
-//Funciones "Simples" que devuelven información constante del servicio
+//Funciones "Simples" que devuelven informaciÃ³n constante del servicio
 const char* SrvcEjepmploServidorWeb::getName ()
 {
 	return SrvcEjepmploServidorWeb::NAME;
@@ -23,7 +23,7 @@ bool SrvcEjepmploServidorWeb::isManual ()
 }
 const char** SrvcEjepmploServidorWeb::getDepends ()
 {
-	return (const char **) SrvcEjepmploServidorWeb::DEPENDENCIAS;
+	return (const char **)SrvcEjepmploServidorWeb::DEPENDENCIAS;
 }
 int SrvcEjepmploServidorWeb::getNumDepends ()
 {
@@ -43,13 +43,13 @@ bool SrvcEjepmploServidorWeb::resume () { return false; }
 
 bool SrvcEjepmploServidorWeb::init ()
 {
-	//Configuración harcodeada. Desde aqui se podría cargar un fichero .properties
+	//ConfiguraciÃ³n harcodeada. Desde aqui se podrÃ­a cargar un fichero .properties
 	flags = MHD_USE_SELECT_INTERNALLY;
 #if _DEBUG
 	flags |= MHD_USE_DEBUG;
 #endif
 
-	//Otra opción  MHD_USE_THREAD_PER_CONNECTION;
+	//Otra opciÃ³n  MHD_USE_THREAD_PER_CONNECTION;
 	port = DEFAULT_PORT;
 	httpDaemon = nullptr;
 
@@ -69,7 +69,7 @@ bool SrvcEjepmploServidorWeb::stop (bool isPaused)
 
 bool SrvcEjepmploServidorWeb::run ()
 {
-	//Lanzamos la ejecución del servicio
+	//Lanzamos la ejecuciÃ³n del servicio
 	void * contexto = this;
 
 
@@ -85,17 +85,17 @@ bool SrvcEjepmploServidorWeb::run ()
 
 /**
 * Cada llamada web que se reciba entra por aqui.
-* Crea objetos con los parámetros GET de la llamada, identifica el servicio, y lo lanza
+* Crea objetos con los parÃ¡metros GET de la llamada, identifica el servicio, y lo lanza
 * \param    [in]   compendioSrvc	puntero al CompendioSrvc que ha recibido la llamada web
-* \param    [in]   connection		- Uso interno - puntero a la conexión
+* \param    [in]   connection		- Uso interno - puntero a la conexiÃ³n
 * \param    [in]   url				Url de la llamada
-* \param    [in]   method			El método HTTP usado por el cliente  (GET, PUT, DELETE, POST, etc.)
-* \param    [in]   version			La versión HTTP usada por el cliente (por ejemplo HTTP/1.1)
-* \param    [in]   upload_data		Los datos que se envían. si no caben su harán sucesivas
-*									llamadas a este método para guardarlo en su totalidad
-* \param    [in]   upload_data_size	Datos en el buffer upload_data (será el tamaño del buffer
-*									salvo en la última llamada)
-* \param    [in]   ptr				Puntero que se puede asociar para futuras llamadas a este método
+* \param    [in]   method			El mÃ©todo HTTP usado por el cliente  (GET, PUT, DELETE, POST, etc.)
+* \param    [in]   version			La versiÃ³n HTTP usada por el cliente (por ejemplo HTTP/1.1)
+* \param    [in]   upload_data		Los datos que se envÃ­an. si no caben su harÃ¡n sucesivas
+*									llamadas a este mÃ©todo para guardarlo en su totalidad
+* \param    [in]   upload_data_size	Datos en el buffer upload_data (serÃ¡ el tamaÃ±o del buffer
+*									salvo en la Ãºltima llamada)
+* \param    [in]   ptr				Puntero que se puede asociar para futuras llamadas a este mÃ©todo
 *									(por ejemplo, si hay un POST que sube muchos datos)
 * \return	Debe devolver MHD_YES si ha procesado la llamada correctamente, o  MHD_NO si se debe
 *			cerrar el socket por un error al procesar la llamada
@@ -135,7 +135,7 @@ int SrvcEjepmploServidorWeb::webServiceMain (void * srvcEjemplo, MHD_Connection 
 
 
 
-	SrvcEjepmploServidorWeb * wc = (SrvcEjepmploServidorWeb *) srvcEjemplo;
+	SrvcEjepmploServidorWeb * wc = (SrvcEjepmploServidorWeb *)srvcEjemplo;
 
 	const char * page = wc->getDescription ();
 
@@ -157,11 +157,10 @@ int SrvcEjepmploServidorWeb::webServiceMain (void * srvcEjemplo, MHD_Connection 
 	// MHD_RESPMEM_PERSISTENT  - Buffer is a persistent (static/global) buffer that won't change for at least the lifetime of the response
 	// MHD_RESPMEM_MUST_FREE   - Buffer is heap-allocated with 'malloc' (or equivalent) and should be freed by MHD
 	// MHD_RESPMEM_MUST_COPY   - Buffer is in transient memory and only valid during the call to 'MHD_create_response_from_buffer'. MHD must make its own private copy of the data for processing.
-	response = MHD_create_response_from_buffer (strlen (page), (void*) page, MHD_RESPMEM_MUST_COPY);
+	response = MHD_create_response_from_buffer (strlen (page), (void*)page, MHD_RESPMEM_MUST_COPY);
 	ret = MHD_queue_response (connection, MHD_HTTP_OK, response);
 	MHD_destroy_response (response);
 	return ret;
 }
 
 #endif //WEB_SERVICE
-

@@ -2,13 +2,13 @@
 #include <cstdio>
 #include <Windows.h>
 
-#include "srvcTesterCfg.h"
-#include "srvcTester_pragmalib.h"
+#include "srvcExampleCfg.h"
+#include "srvcExample_pragmalib.h"
 
 #include "WinSrvc.h"
 
-#include "srvcTester.h"
-#include "srvcTesterWeb.h"
+#include "srvcExample.h"
+#include "srvcExampleWeb.h"
 
 
 
@@ -23,7 +23,7 @@ int WinMain (HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nSh
 */
 
 
-int main (int argc, char * argv [])
+int main (int argc, char * argv[])
 {
 	//No es necesraio usar el template... pero a mi me simplifica código.
 	//Bastaría con copiar/personalizar el contenido de la función srvcMain definida en WinSrvc.h

@@ -8,7 +8,7 @@
 #define _PRAGMA_LIB_CTRL_PRESENCIA_H_
 
 
-#include "srvcTesterCfg.h"
+#include "srvcExampleCfg.h"
 
 #ifdef _DEBUG 
 #define END_LIB_STD "d.lib"
