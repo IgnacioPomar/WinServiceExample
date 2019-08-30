@@ -362,27 +362,29 @@ void CommandLineParser::printHelp ()
 	for (auto& opts : pd->options)
 	{
 		Option &opt = opts;
+		const char * sep = ",";
 
 		//Opt name
 		size_t optLen = opt.opt.size ();
 		if (optLen == 0)
 		{
-			std::setw (nameLen + 3); //one for space and one for ,
+			std::cout << std::string (nameLen + 2, ' '); //one for space 
+			sep = " ";
 		}
 		else
 		{
-			std::cout << std::setw (nameLen - optLen) << " -" << opt.opt << ",";
+			std::cout << std::string (nameLen - optLen, ' ') << " -" << opt.opt;
 		}
 
 		//Opt long name
 		optLen = opt.longOpt.size ();
 		if (optLen == 0)
 		{
-			std::setw (longNameLen + 5); //for tab plus --
+			std::cout << std::string (longNameLen + 6, ' '); // tab plus ",--"
 		}
 		else
 		{
-			std::cout << "--" << opt.opt << "   " << std::setw (longNameLen - optLen);
+			std::cout << sep << "--" << opt.longOpt << "   " << std::string (longNameLen - optLen, ' ');
 		}
 
 		//description

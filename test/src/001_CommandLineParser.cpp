@@ -10,16 +10,31 @@
 
 #define arrlen(arr)  sizeof (arr) / sizeof (void *)
 
+//#define SHOW_HELP_FORMAT
+
 UNIT_TEST_CASE (TestCommandLineParser)
 {
+#ifdef SHOW_HELP_FORMAT
+	{
+		CommandLineParser cmdLine;
+		cmdLine.addOption ("long", "small", "Lorem ipsum dolor sit amet", true, 0);
+		cmdLine.addOption ("s", "longlong", "consectetur adipiscing elit");
+		cmdLine.addOption ("", "normal", "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua");
+		cmdLine.addOption ("a", "", "Ut enim ad minim veniam");
+
+		const char * argv[] = { __FILE__ };
+		cmdLine.parseOrHelp (arrlen (argv), argv);
+	}
+#endif // SHOW_HELP_FORMAT
+
 	//Check for mandatory params
 	{
 		CommandLineParser cmdLine;
 		cmdLine.addOption ("f", "first", "Forced parameter", true, 0);
 		cmdLine.addOption ("s", "second", "Forced parameter two atributes", true, 2);
-		cmdLine.addOption ("t", "third ", "Forced parameter unlimited atributes", true, -1);
-		cmdLine.addOption ("fo", "fourth ", "optional parameter", false);
-		cmdLine.addOption ("fi", "fifth ", "optional parameter (fifth)", false);
+		cmdLine.addOption ("t", "third", "Forced parameter unlimited atributes", true, -1);
+		cmdLine.addOption ("fo", "fourth", "optional parameter", false);
+		cmdLine.addOption ("fi", "fifth", "optional parameter (fifth)", false);
 
 
 		const char * argvSuccess[] = { "exe", "-f", "--second=a,b", "/t", "something" , "--fi" };
@@ -37,7 +52,7 @@ UNIT_TEST_CASE (TestCommandLineParser)
 		const char * argvFail_3[] = { "exe", "-t=a", "-f", "-s" };
 		UNIT_CHECK (!cmdLine.parse (arrlen (argvFail_1), argvFail_1));
 
-		//cmdLine.printHelp ();
+		//
 
 	}
 	/*
