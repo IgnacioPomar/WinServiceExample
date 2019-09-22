@@ -18,7 +18,7 @@
 #include "Properties.h"
 
 
-
+static constexpr const char * SPACE_CHARS = " \t";
 static constexpr const char * COMMENT_CHARS = "#!";
 static constexpr const char * EQUAL_CHARS = ":=";
 
@@ -48,15 +48,10 @@ std::ostream & operator<<(std::ostream & out, const PropLine & line)
 	{
 		out << line.key << " = " << line.value;
 	}
-
-	if (line.comment.size () > 0)
+	else if (line.comment.size () > 0)
 	{
-		if (0 != line.comment.find_first_of (COMMENT_CHARS))
-		{
-			out << "# ";
-		}
 
-		out << "\t\t" << line.comment;
+		out << line.comment;
 	}
 
 	out << std::endl;
@@ -75,24 +70,40 @@ public:
 	bool isLoadedFromFile;
 
 	void store (std::string key, std::string value, std::string comment);
+	bool isCommentline (std::string & line);
 };
 
 void PropertyPrivateData::store (std::string key, std::string value, std::string comment)
 {
-	//Primero los buscamos
-	Values::const_iterator got = vals.find (key);
-	if (got == vals.end ())
+	if (key.size () == 0)
 	{
-		//No lo hemos encontrado, hay que insertarlo
+		//Its a comment line
 		PropLine line (key, value, comment);
 		lines.push_back (line);
-		PropLine &lineInVector = lines.back ();
-		vals [key] = &lineInVector.value;
 	}
 	else
 	{
-		*got->second = value;
+		Values::const_iterator got = vals.find (key);
+		if (got == vals.end ())
+		{
+			PropLine line (key, value, comment);
+			lines.push_back (line);
+			PropLine &lineInVector = lines.back ();
+			vals [key] = &lineInVector.value;
+		}
+		else
+		{
+			*got->second = value;
+		}
 	}
+}
+
+bool PropertyPrivateData::isCommentline (std::string & line)
+{
+	std::size_t comentPos = line.find_first_of (COMMENT_CHARS);
+	std::size_t startPos = line.find_first_not_of (SPACE_CHARS);
+
+	return  ((comentPos != std::string::npos) && (comentPos == startPos));
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Generic functions <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -357,8 +368,9 @@ void Properties::load (const char * propfileName)
 	std::string linea;
 	std::ifstream propFile (propfileName);
 
-	std::size_t comentPos;
-	std::size_t equalPos;
+	bool isFirstLine = true;
+	std::string key;
+	std::string value;
 
 
 	if (propFile.is_open ())
@@ -366,37 +378,54 @@ void Properties::load (const char * propfileName)
 		pd->isLoadedFromFile = true;
 		while (std::getline (propFile, linea))
 		{
-			//YAGNI: multiline suport
-
-			//First comments
-			std::string comment;
-			comentPos = linea.find_first_of (COMMENT_CHARS);
-			if (comentPos != std::string::npos)
+			if (!isFirstLine)
 			{
-				comment = linea.substr (comentPos);
-				linea.erase (comentPos);
+				trim (linea);
+				value.append (linea);
+
+				if ('\\' == *linea.rbegin ())
+				{
+					value.pop_back ();
+				}
+				else
+				{
+					pd->store (key, value, "");
+					isFirstLine = true;
+				}
 			}
-
-			//Find equal separator
-			equalPos = linea.find_first_of (EQUAL_CHARS);
-			if (equalPos != std::string::npos)
+			else if (pd->isCommentline (linea))
 			{
-				std::string key = linea.substr (0, equalPos);
-				std::string value = linea.substr (++equalPos);
-
-				trim (key);
-				trim (value);
-
-				unescape (key);
-				unescape (value);
-
-				pd->store (key, value, comment);
-
+				pd->store ("", "", linea);
 			}
 			else
 			{
-				// Is a comment line (or empty)
-				pd->store ("", "", comment);
+				//Find equal separator
+				std::size_t equalPos = linea.find_first_of (EQUAL_CHARS);
+				if (equalPos != std::string::npos)
+				{
+					key = linea.substr (0, equalPos);
+					value = linea.substr (++equalPos);
+
+					trim (key);
+					trim (value);
+
+					unescape (key);
+					unescape (value);
+
+					if ('\\' == *linea.rbegin ())
+					{
+						value.pop_back ();
+						isFirstLine = false;
+					}
+					else
+					{
+						pd->store (key, value, "");
+					}
+				}
+				else //empty or wrong line
+				{
+					pd->store ("", "", linea);
+				}
 			}
 		}
 		propFile.close ();
