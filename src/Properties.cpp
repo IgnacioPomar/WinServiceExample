@@ -383,7 +383,7 @@ void Properties::load (const char * propfileName)
 				trim (linea);
 				value.append (linea);
 
-				if ('\\' == *linea.rbegin ())
+				if ('\\' == linea.back ())
 				{
 					value.pop_back ();
 				}
@@ -412,7 +412,7 @@ void Properties::load (const char * propfileName)
 					unescape (key);
 					unescape (value);
 
-					if ('\\' == *linea.rbegin ())
+					if ('\\' == linea.back ())
 					{
 						value.pop_back ();
 						isFirstLine = false;
