@@ -76,7 +76,7 @@
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)d</TargetName>
     <IncludePath>$(SolutionDir)include;$(SolutionDir)../vc/$(PlatformShortName)/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)../vc/$(PlatformShortName)/lib;$(SolutionDir)bin/$(PlatformShortName)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)bin/$(PlatformShortName)\;$(SolutionDir)../vc/$(PlatformShortName)/lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -84,21 +84,21 @@
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)d</TargetName>
     <IncludePath>$(SolutionDir)include;$(SolutionDir)../vc/$(PlatformShortName)/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)../vc/$(PlatformShortName)/lib;$(SolutionDir)bin/$(PlatformShortName)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)bin/$(PlatformShortName)\;$(SolutionDir)../vc/$(PlatformShortName)/lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\$(PlatformShortName)\</IntDir>
     <IncludePath>$(SolutionDir)include;$(SolutionDir)../vc/$(PlatformShortName)/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)../vc/$(PlatformShortName)/lib;$(SolutionDir)bin/$(PlatformShortName)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)bin/$(PlatformShortName)\;$(SolutionDir)../vc/$(PlatformShortName)/lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\$(PlatformShortName)\</IntDir>
     <IncludePath>$(SolutionDir)include;$(SolutionDir)../vc/$(PlatformShortName)/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)../vc/$(PlatformShortName)/lib;$(SolutionDir)bin/$(PlatformShortName)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)bin/$(PlatformShortName)\;$(SolutionDir)../vc/$(PlatformShortName)/lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\CommandLineParser.h" />
     <ClInclude Include="..\include\libOS_cfg.h" />
+    <ClInclude Include="..\include\Properties.h" />
     <ClInclude Include="..\include\WinSrvc.h" />
     <ClInclude Include="..\include\WinSrvcBase.h" />
     <ClInclude Include="..\include\WinSrvcUtls.h" />
@@ -166,6 +167,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\CommandLineParser.cpp" />
     <ClCompile Include="..\src\dllmain.cpp" />
+    <ClCompile Include="..\src\Properties.cpp" />
     <ClCompile Include="..\src\WinSrvcBase.cpp" />
     <ClCompile Include="..\src\WinSrvcUtls.cpp" />
   </ItemGroup>

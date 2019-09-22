@@ -17,6 +17,9 @@
     <ClCompile Include="..\test\src\001_CommandLineParser.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\test\src\002_Properties.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\test\include\tester_pragmalib.h">
