@@ -15,6 +15,8 @@
 #include <algorithm> // May to min in getBool
 #include <sstream> //parse string to bool in getBool
 
+
+#include "PropertiesSecureStr.h"
 #include "Properties.h"
 
 
@@ -89,7 +91,7 @@ void PropertyPrivateData::store (std::string key, std::string value, std::string
 			PropLine line (key, value, comment);
 			lines.push_back (line);
 			PropLine &lineInVector = lines.back ();
-			vals [key] = &lineInVector.value;
+			vals[key] = &lineInVector.value;
 		}
 		else
 		{
@@ -237,7 +239,7 @@ const char * Properties::getStr (const char * key, const char * defaultValue)
 	}
 	else
 	{
-		return (char *) (*got->second).c_str ();
+		return (char *)(*got->second).c_str ();
 	}
 }
 
@@ -327,10 +329,10 @@ void Properties::setStr (const char * key, const char * value)
 * \param    [in]   key
 * \param    [in]   value
 */
-void Properties::setSecureStr (const char * key, const char * v, Secret secret)
+void Properties::setSecureStr (const char * key, const char * v, const char* secret)
 {
-	//TODO: make this function
-	this->setStr (key, v);
+	std::string crypted = PropertySecureStr::encrypt (v, secret);
+	this->setStr (key, crypted.c_str ());
 }
 
 
@@ -341,10 +343,10 @@ void Properties::setSecureStr (const char * key, const char * v, Secret secret)
 * \param    [in]   defaultValue
 * \return
 */
-const char * Properties::getSecureStr (const char * key, const char * defaultValue, Secret secret)
+void Properties::getSecureStr (const char * key, const char * defaultValue, const char* secret, std::string & out)
 {
-	//TODO: make this function
-	return this->getStr (key, defaultValue);
+	std::string crypted = this->getStr (key, defaultValue);
+	out = PropertySecureStr::decrypt (crypted, secret);
 }
 
 

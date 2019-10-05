@@ -160,6 +160,7 @@
     <ClInclude Include="..\include\CommandLineParser.h" />
     <ClInclude Include="..\include\libOS_cfg.h" />
     <ClInclude Include="..\include\Properties.h" />
+    <ClInclude Include="..\include\PropertiesSecureStr.h" />
     <ClInclude Include="..\include\WinSrvc.h" />
     <ClInclude Include="..\include\WinSrvcBase.h" />
     <ClInclude Include="..\include\WinSrvcUtls.h" />
@@ -168,6 +169,7 @@
     <ClCompile Include="..\src\CommandLineParser.cpp" />
     <ClCompile Include="..\src\dllmain.cpp" />
     <ClCompile Include="..\src\Properties.cpp" />
+    <ClCompile Include="..\src\PropertiesSecureStr.cpp" />
     <ClCompile Include="..\src\WinSrvcBase.cpp" />
     <ClCompile Include="..\src\WinSrvcUtls.cpp" />
   </ItemGroup>

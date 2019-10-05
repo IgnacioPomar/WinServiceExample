@@ -31,7 +31,7 @@ UNIT_TEST_CASE (PropertyConfigurationTest)
 
 	//----- strings -----
 	props.setStr ("keyStr", VALOR_STR);
-	props.setSecureStr ("Securekey", VALOR_STR, {"1234567"});
+	props.setSecureStr ("Securekey", VALOR_STR, "1234567");
 
 	std::string str = props.getStr ("keyStr", "XX");
 	UNIT_CHECK (str.compare (VALOR_STR) == 0);
@@ -40,7 +40,7 @@ UNIT_TEST_CASE (PropertyConfigurationTest)
 	str = props.getStr ("Securekey", "XX");
 	UNIT_CHECK (str.compare (VALOR_STR) != 0); //It should be different
 
-	str = props.getSecureStr ("Securekey", "XX", {"1234567"});
+	props.getSecureStr ("Securekey", "XX", "1234567", str);
 	UNIT_CHECK (str.compare (VALOR_STR) == 0);
 
 

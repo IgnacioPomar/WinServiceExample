@@ -8,11 +8,9 @@
 #ifndef _PROPERTY_CONFIGURATION_
 #define _PROPERTY_CONFIGURATION_
 
-
+#include <string>
 #include "libOS_cfg.h"
 
-
-typedef struct Secret { const char s [8]; } Secret;
 
 
 class PropertyPrivateData;
@@ -39,8 +37,8 @@ public:
 	void   setDouble (const char* key, double value);
 
 	//
-	const char * getSecureStr (const char* key, const char * defaultValue, Secret secret);
-	void setSecureStr (const char* key, const char * value, Secret secret);
+	void getSecureStr (const char* key, const char * defaultValue, const char* secret, std::string & out);
+	void setSecureStr (const char* key, const char * value, const char* secret);
 	bool isLoadedFromFile ();
 
 private:
