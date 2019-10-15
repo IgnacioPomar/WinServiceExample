@@ -95,7 +95,7 @@ enum SESS_CHANGE_TYPE
 /**
  * En caso de necesitar alguna de las funciones extendidas, se deberá heredar de esta clase
  */
-class  WinSrvcBaseEx : public WinSrvcBase
+class LIBOS_API WinSrvcBaseEx : public WinSrvcBase
 {
 public:
 	/**

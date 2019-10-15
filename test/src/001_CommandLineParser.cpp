@@ -1,7 +1,6 @@
 ﻿/*********************************************************************************************
-*	Name        : 001_Historico.cpp
-*  Description : Pruebas unitarias del funcionamiento del mantenimiento del historico
-*	Copyright	(C) 2018  GRANTIA CAPITAL, SGIIC, S.A.
+*	Name        : 001_Commandlineparse.cpp
+*  Description : Check the parser
 ********************************************************************************************/
 
 #include <string>
@@ -23,7 +22,7 @@ UNIT_TEST_CASE (TestCommandLineParser)
 		cmdLine.addOption ("", "normal", "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua");
 		cmdLine.addOption ("a", "", "Ut enim ad minim veniam");
 
-		const char * argv[] = { __FILE__ };
+		const char * argv [] = {__FILE__};
 		cmdLine.parseOrHelp (arrlen (argv), argv);
 	}
 #endif // SHOW_HELP_FORMAT
@@ -38,19 +37,19 @@ UNIT_TEST_CASE (TestCommandLineParser)
 		cmdLine.addOption ("fi", "fifth", "optional parameter (fifth)", false);
 
 
-		const char * argvSuccess[] = { "exe", "-f", "/t", "something" , "--fi", "--second=a,b" };
+		const char * argvSuccess [] = {"exe", "-f", "/t", "something" , "--fi", "--second=a,b"};
 		UNIT_CHECK (cmdLine.parse (arrlen (argvSuccess), argvSuccess));
 
 		cmdLine.reset ();
-		const char * argvFail_1[] = { "exe" };
+		const char * argvFail_1 [] = {"exe"};
 		UNIT_CHECK (!cmdLine.parse (arrlen (argvFail_1), argvFail_1));
 
 		cmdLine.reset ();
-		const char * argvFail_2[] = { "exe", "-t=a" };
+		const char * argvFail_2 [] = {"exe", "-t=a"};
 		UNIT_CHECK (!cmdLine.parse (arrlen (argvFail_1), argvFail_1));
 
 		cmdLine.reset ();
-		const char * argvFail_3[] = { "exe", "-t=a", "-f", "-s" };
+		const char * argvFail_3 [] = {"exe", "-t=a", "-f", "-s"};
 		UNIT_CHECK (!cmdLine.parse (arrlen (argvFail_1), argvFail_1));
 	}
 
@@ -65,7 +64,7 @@ UNIT_TEST_CASE (TestCommandLineParser)
 		cmdLine.addOption ("d", "", "", false, 1);
 		cmdLine.addOption ("e", "", "", false, -1);
 
-		const char * argv[] = { "execName", "-a", "-e", "val1", "val2", "val3", "-d", "val1", "extra1", "--c=val1,val2", "extra2" , "extra3" };
+		const char * argv [] = {"execName", "-a", "-e", "val1", "val2", "val3", "-d", "val1", "extra1", "--c=val1,val2", "extra2" , "extra3"};
 		UNIT_CHECK (cmdLine.parse (arrlen (argv), argv));
 
 		UNIT_CHECK (cmdLine.hasOption ("a"));

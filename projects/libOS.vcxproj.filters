@@ -30,6 +30,12 @@
     <ClInclude Include="..\include\CommandLineParser.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Properties.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PropertiesSecureStr.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllmain.cpp">
@@ -42,6 +48,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\CommandLineParser.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Properties.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PropertiesSecureStr.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
