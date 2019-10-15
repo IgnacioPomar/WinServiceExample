@@ -16,7 +16,6 @@
 
 void WinSrvcBase::standAloneRun ()
 {
-	this->init ();
 	if (this->run ())
 	{
 		isOnline = true;

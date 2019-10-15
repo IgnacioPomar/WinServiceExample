@@ -58,7 +58,7 @@ public:
 
 
 	//Metodos de control del servicio
-	bool init ();
+	bool init (int argc, char * argv[]);
 	bool pause ();
 	bool resume ();
 	bool stop (bool isPaused);

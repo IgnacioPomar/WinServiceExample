@@ -41,7 +41,7 @@ bool SrvcEjepmploServidorWeb::pause () { return false; }
 bool SrvcEjepmploServidorWeb::resume () { return false; }
 
 
-bool SrvcEjepmploServidorWeb::init ()
+bool SrvcEjepmploServidorWeb::init (int argc, char * argv[])
 {
 	//Configuración harcodeada. Desde aqui se podría cargar un fichero .properties
 	flags = MHD_USE_SELECT_INTERNALLY;

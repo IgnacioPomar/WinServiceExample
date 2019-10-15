@@ -35,7 +35,7 @@ bool SrvcEjemplo::resume () { return false; }
 
 
 
-bool SrvcEjemplo::init ()
+bool SrvcEjemplo::init (int argc, char * argv[])
 {
 	//INICIALIZA los datos del servicio: cargar ficheros cfg, etc...
 	return true;

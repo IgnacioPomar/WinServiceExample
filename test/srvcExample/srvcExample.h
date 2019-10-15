@@ -23,7 +23,7 @@ private:
 	static constexpr const char * DESCRIPTION = "Servicio para demostrar el uso de como generar un servicio con un simple hilo";
 	static constexpr bool IS_MANUAL_MODE = true;
 	static constexpr int NUM_DEPENDENCIAS = 2;
-	static constexpr const char * DEPENDENCIAS [NUM_DEPENDENCIAS] = {"Netman", "nsi"}; //Necesitamos que haya arrancado la red correctamente
+	static constexpr const char * DEPENDENCIAS[NUM_DEPENDENCIAS] = { "Netman", "nsi" }; //Necesitamos que haya arrancado la red correctamente
 
 
 	//Para ejecutar el servicio
@@ -40,7 +40,7 @@ public:
 
 
 	//Metodos de control del servicio
-	bool init ();
+	bool init (int argc, char * argv[]);
 	bool pause ();
 	bool resume ();
 	bool stop (bool isPaused);

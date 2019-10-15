@@ -33,7 +33,7 @@ public:
 	* Se ejecutará antes de lanzar el servicio por primera vez: el objetivo es inicializar datos
 	*  \return	si devuelve false, el servicio no se iniciará, por lo que debe devolver true
 	*/
-	virtual bool init () = 0;
+	virtual bool init (int argc, char * argv[]) = 0;
 
 	/**
 	* Cuando desde el SCM se reciba una orden de pausado, se llamará a esta función
