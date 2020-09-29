@@ -18,8 +18,7 @@ void WinSrvcBase::standAloneRun ()
 {
 	if (this->run ())
 	{
-		isOnline = true;
-		while (isOnline)
+		while (isOnline ())
 		{
 			std::this_thread::sleep_for (std::chrono::seconds (5));
 		}

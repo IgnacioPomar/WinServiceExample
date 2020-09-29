@@ -24,8 +24,8 @@ public:
 	virtual int getNumDepends () = 0;
 
 
-	// Variables exclusivas para una ejecución en modo stand alone
-	bool isOnline;
+	// Exclusivas para una ejecución en modo stand alone: indica si el proceso aún esta en ejecución
+	virtual bool isOnline () = 0;
 
 	//Metodos de control del servicio
 

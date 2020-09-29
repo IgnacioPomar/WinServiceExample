@@ -45,7 +45,7 @@ private:
 	static int webServiceMain (void * srvcPresencia, MHD_Connection * connection, const char * url, const char * method, const char * version, const char * upload_data, size_t * upload_data_size, void ** ptr);
 
 
-
+	bool varIsOnline;
 
 
 public:
@@ -56,6 +56,7 @@ public:
 	const char** getDepends ();
 	int getNumDepends ();
 
+	bool isOnline ();
 
 	//Metodos de control del servicio
 	bool init (int argc, char * argv[]);

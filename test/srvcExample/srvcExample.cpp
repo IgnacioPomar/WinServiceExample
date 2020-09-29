@@ -29,6 +29,11 @@ int SrvcEjemplo::getNumDepends ()
 	return SrvcEjemplo::NUM_DEPENDENCIAS;
 }
 
+bool SrvcEjemplo::isOnline ()
+{
+	return varIsOnline;
+}
+
 //No adminitimos ni pausa ni reanudar... por lo que devuelven false
 bool SrvcEjemplo::pause () { return false; }
 bool SrvcEjemplo::resume () { return false; }
@@ -76,12 +81,14 @@ bool SrvcEjemplo::stop (bool isPaused)
 		srvcDta = nullptr;
 
 	}
+	varIsOnline = false;
 	return true;
 }
 
 
 bool SrvcEjemplo::run ()
 {
+	varIsOnline = true;
 	srvcDta = new SrvcDta ();
 
 	std::thread (&SrvcDta::foo, srvcDta);

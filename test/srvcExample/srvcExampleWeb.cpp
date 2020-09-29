@@ -62,7 +62,7 @@ bool SrvcEjepmploServidorWeb::stop (bool isPaused)
 {
 	//Detenemos un servicio
 	MHD_stop_daemon (httpDaemon);
-
+	varIsOnline = false;
 	return true;
 }
 
@@ -74,7 +74,10 @@ bool SrvcEjepmploServidorWeb::run ()
 
 
 	httpDaemon = MHD_start_daemon (flags, port, nullptr, nullptr, &webServiceMain, contexto, MHD_OPTION_END);
-	return (httpDaemon != nullptr);
+
+	varIsOnline = (httpDaemon != nullptr);
+
+	return varIsOnline;
 }
 
 

@@ -29,6 +29,8 @@ private:
 	//Para ejecutar el servicio
 	SrvcDta * srvcDta;
 
+	bool varIsOnline;
+
 
 public:
 	const char* getName ();
@@ -38,6 +40,9 @@ public:
 	const char** getDepends ();
 	int getNumDepends ();
 
+
+
+	bool isOnline ();
 
 	//Metodos de control del servicio
 	bool init (int argc, char * argv[]);
