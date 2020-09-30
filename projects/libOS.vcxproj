@@ -170,6 +170,7 @@
     <ClCompile Include="..\src\dllmain.cpp" />
     <ClCompile Include="..\src\Properties.cpp" />
     <ClCompile Include="..\src\PropertiesSecureStr.cpp" />
+    <ClCompile Include="..\src\rijndael.cpp" />
     <ClCompile Include="..\src\WinSrvcBase.cpp" />
     <ClCompile Include="..\src\WinSrvcUtls.cpp" />
   </ItemGroup>

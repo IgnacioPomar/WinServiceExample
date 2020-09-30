@@ -56,5 +56,8 @@
     <ClCompile Include="..\src\PropertiesSecureStr.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\rijndael.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
