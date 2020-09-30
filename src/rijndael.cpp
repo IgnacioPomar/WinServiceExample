@@ -852,8 +852,7 @@ int rijndaelSetupDecrypt (u32 *rk, const u8 *key, int keybits)
 	return nrounds;
 }
 
-void rijndaelEncrypt (const u32 *rk, int nrounds, const u8 plaintext[16],
-	u8 ciphertext[16])
+void rijndaelEncrypt (const u32 *rk, int nrounds, const u8 plaintext[AES_BLOCK_SIZE], u8 ciphertext[AES_BLOCK_SIZE])
 {
 	u32 s0, s1, s2, s3, t0, t1, t2, t3;
 #ifndef FULL_UNROLL
@@ -1034,8 +1033,7 @@ void rijndaelEncrypt (const u32 *rk, int nrounds, const u8 plaintext[16],
 	PUTU32 (ciphertext + 12, s3);
 }
 
-void rijndaelDecrypt (const u32 *rk, int nrounds, const u8 ciphertext[16],
-	u8 plaintext[16])
+void rijndaelDecrypt (const u32 *rk, int nrounds, const u8 ciphertext[AES_BLOCK_SIZE], u8 plaintext[AES_BLOCK_SIZE])
 {
 	u32 s0, s1, s2, s3, t0, t1, t2, t3;
 #ifndef FULL_UNROLL

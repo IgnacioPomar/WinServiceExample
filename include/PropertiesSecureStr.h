@@ -46,8 +46,8 @@ constexpr int AES_BLOCK_SIZE = 16;
 
 int rijndaelSetupEncrypt (unsigned long *rk, const unsigned char *key, int keybits);
 int rijndaelSetupDecrypt (unsigned long *rk, const unsigned char *key, int keybits);
-void rijndaelEncrypt (const unsigned long *rk, int nrounds, const unsigned char plaintext[16], unsigned char ciphertext[16]);
-void rijndaelDecrypt (const unsigned long *rk, int nrounds, const unsigned char ciphertext[16], unsigned char plaintext[16]);
+void rijndaelEncrypt (const unsigned long *rk, int nrounds, const unsigned char plaintext[AES_BLOCK_SIZE], unsigned char ciphertext[AES_BLOCK_SIZE]);
+void rijndaelDecrypt (const unsigned long *rk, int nrounds, const unsigned char ciphertext[AES_BLOCK_SIZE], unsigned char plaintext[AES_BLOCK_SIZE]);
 
 #define KEYLENGTH(keybits) ((keybits)/8)
 #define RKLENGTH(keybits)  ((keybits)/8+28)
