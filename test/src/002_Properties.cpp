@@ -12,6 +12,7 @@
 
 
 constexpr const char * VALOR_STR = "Valor en formato str";
+constexpr const char * STR_16B = "1234567890123456";
 
 UNIT_TEST_CASE (PropertyConfigurationTest)
 {
@@ -42,6 +43,12 @@ UNIT_TEST_CASE (PropertyConfigurationTest)
 
 	props.getSecureStr ("Securekey", "XX", "1234567", str);
 	UNIT_CHECK (str.compare (VALOR_STR) == 0);
+
+
+	//TEst with just the AES Block Size
+	props.setSecureStr ("Securekey", STR_16B, "aabbcc");
+	props.getSecureStr ("Securekey", "XX", "aabbcc", str);
+	UNIT_CHECK (str.compare (STR_16B) == 0);
 
 
 	//Comment/descommet to check save

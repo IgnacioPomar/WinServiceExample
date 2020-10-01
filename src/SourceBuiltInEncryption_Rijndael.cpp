@@ -1,5 +1,5 @@
 ﻿/*********************************************************************************************
-*	Name		: rijndael.cpp
+*	Name		: SourceBuiltInEncryption_Rijndael.cpp
 *	Description	: AES (rijndael) Encryption and Decryption
 *	License		: Public domain; no restrictions on use
 *	See			: http://www.efgh.com/software/rijndael.htm
@@ -8,9 +8,137 @@
 
 
 #include <stdio.h>
-#include "PropertiesSecureStr.h"
 
-#ifndef HAS_CRYPTOCPP
+#include "BuiltInEncryption.h"
+
+
+//-------------------------------------------------------------------------------
+// bridge between the C implementation of rijndael (AES) algorithm and C++
+//-------------------------------------------------------------------------------
+
+void BuiltInEncryption::fillKeyFromPass (u8 * key, int keySize, std::string & pass)
+{
+	//YAGNI: Use a better key derivation function (KDF) instead 
+	const char * password = pass.c_str ();
+	const char * start = password;
+	u8 dancingChar = 9;
+	for (int i = 0; i < keySize; i++)
+	{
+		if (*password == 0) password = start;
+
+		dancingChar ^= *password;
+
+		key[i] = dancingChar;
+		password++;
+	}
+}
+
+
+std::string BuiltInEncryption::aesEncrypt (const std::string & in, std::string &pass)
+{
+	std::string out;
+	u32 rk[RKLENGTH (KEYBITS)];
+	u8 key[KEYLENGTH (KEYBITS)];
+	fillKeyFromPass (key, sizeof (key), pass);
+
+	int nrounds = rijndaelSetupEncrypt (rk, key, KEYBITS);
+
+	//we call the cipher function for each chunk of data
+	int size = (int)in.size ();
+	int offset = 0;
+	const char * dta = in.c_str ();
+
+	unsigned char plaintext[AES_BLOCK_SIZE];
+	unsigned char ciphertext[AES_BLOCK_SIZE];
+
+	bool hasEraseMark = false;
+
+	while (offset < size)
+	{
+		int j;
+		for (j = 0; j < AES_BLOCK_SIZE; j++)
+		{
+			if (offset + j >= size) break;
+			plaintext[j] = dta[offset + j];
+		}
+
+		if (j < AES_BLOCK_SIZE)
+		{
+			hasEraseMark = true;
+			plaintext[AES_BLOCK_SIZE - 1] = AES_BLOCK_SIZE - j;
+		}
+
+		rijndaelEncrypt (rk, nrounds, plaintext, ciphertext);
+
+		for (j = 0; j < AES_BLOCK_SIZE; j++)
+			out += ciphertext[j];
+
+		offset += AES_BLOCK_SIZE;
+
+	}
+
+	if (!hasEraseMark)
+	{
+		//We need another block with the size to rease
+		plaintext[AES_BLOCK_SIZE - 1] = AES_BLOCK_SIZE;
+
+		rijndaelEncrypt (rk, nrounds, plaintext, ciphertext);
+
+		for (int j = 0; j < AES_BLOCK_SIZE; j++)
+			out += ciphertext[j];
+	}
+
+
+	return out;
+}
+
+std::string BuiltInEncryption::aesDecrypt (const std::string & in, std::string &pass)
+{
+	std::string out;
+	unsigned long rk[RKLENGTH (KEYBITS)];
+	unsigned char key[KEYLENGTH (KEYBITS)];
+	fillKeyFromPass (key, sizeof (key), pass);
+
+	int nrounds = rijndaelSetupDecrypt (rk, key, KEYBITS);
+
+	//chunks to Decrypt must have AES_BLOCK_SIZE
+	int size = (int)in.size ();
+	int offset = 0;
+	const char * dta = in.c_str ();
+	while (offset < size)
+	{
+		unsigned char plaintext[AES_BLOCK_SIZE];
+		unsigned char ciphertext[AES_BLOCK_SIZE];
+
+		int j;
+		for (j = 0; j < AES_BLOCK_SIZE; j++)
+		{
+			if (offset + j >= size) break;
+			ciphertext[j] = dta[offset + j];
+		}
+
+		rijndaelDecrypt (rk, nrounds, ciphertext, plaintext);
+
+		for (j = 0; j < AES_BLOCK_SIZE; j++)
+			out += plaintext[j];
+
+		offset += AES_BLOCK_SIZE;
+	}
+
+	//In the final char is the number of chars to rease
+	char bytesToErase = out.back ();
+
+	//Erase everything from the first null to the end.... as it should be a plain c str
+	out.erase (out.size () - bytesToErase);
+	//out.erase (std::find (out.begin (), out.end (), '\0'), out.end ());
+	return out;
+}
+
+//-------------------------------------------------------------------------------
+// Original C implementation
+//-------------------------------------------------------------------------------
+
+
 
 #define FULL_UNROLL
 
@@ -720,7 +848,7 @@ static const u32 rcon[] =
  *
  * @return the number of rounds for the given cipher key size.
  */
-int rijndaelSetupEncrypt (u32 *rk, const u8 *key, int keybits)
+int BuiltInEncryption::rijndaelSetupEncrypt (u32 * rk, const u8 * key, int keybits)
 {
 	int i = 0;
 	u32 temp;
@@ -809,7 +937,7 @@ int rijndaelSetupEncrypt (u32 *rk, const u8 *key, int keybits)
  *
  * @return the number of rounds for the given cipher key size.
  */
-int rijndaelSetupDecrypt (u32 *rk, const u8 *key, int keybits)
+int BuiltInEncryption::rijndaelSetupDecrypt (u32 * rk, const u8 * key, int keybits)
 {
 	int nrounds, i, j;
 	u32 temp;
@@ -852,7 +980,7 @@ int rijndaelSetupDecrypt (u32 *rk, const u8 *key, int keybits)
 	return nrounds;
 }
 
-void rijndaelEncrypt (const u32 *rk, int nrounds, const u8 plaintext[AES_BLOCK_SIZE], u8 ciphertext[AES_BLOCK_SIZE])
+void BuiltInEncryption::rijndaelEncrypt (const u32 * rk, int nrounds, const u8 plaintext[AES_BLOCK_SIZE], u8 ciphertext[AES_BLOCK_SIZE])
 {
 	u32 s0, s1, s2, s3, t0, t1, t2, t3;
 #ifndef FULL_UNROLL
@@ -1033,7 +1161,7 @@ void rijndaelEncrypt (const u32 *rk, int nrounds, const u8 plaintext[AES_BLOCK_S
 	PUTU32 (ciphertext + 12, s3);
 }
 
-void rijndaelDecrypt (const u32 *rk, int nrounds, const u8 ciphertext[AES_BLOCK_SIZE], u8 plaintext[AES_BLOCK_SIZE])
+void BuiltInEncryption::rijndaelDecrypt (const u32 * rk, int nrounds, const u8 ciphertext[AES_BLOCK_SIZE], u8 plaintext[AES_BLOCK_SIZE])
 {
 	u32 s0, s1, s2, s3, t0, t1, t2, t3;
 #ifndef FULL_UNROLL
@@ -1214,6 +1342,3 @@ void rijndaelDecrypt (const u32 *rk, int nrounds, const u8 ciphertext[AES_BLOCK_
 		rk[3];
 	PUTU32 (plaintext + 12, s3);
 }
-
-
-#endif // HAS_CRYPTOCPP

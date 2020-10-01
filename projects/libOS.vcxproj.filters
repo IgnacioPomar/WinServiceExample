@@ -36,6 +36,9 @@
     <ClInclude Include="..\include\PropertiesSecureStr.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\BuiltInEncryption.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\dllmain.cpp">
@@ -56,7 +59,10 @@
     <ClCompile Include="..\src\PropertiesSecureStr.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\rijndael.cpp">
+    <ClCompile Include="..\src\SourceBuiltInEncryption_Base64.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SourceBuiltInEncryption_Rijndael.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
