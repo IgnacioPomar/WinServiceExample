@@ -53,6 +53,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org/>
 
+**IMPORTANT:** This license does not include the file SourceBuiltInEncryption_Base64 
+wich comes from stackOverflow, and therefore, is unther the CC BY-SA 3.0 
+
 
 
 
