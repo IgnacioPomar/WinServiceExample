@@ -27,7 +27,7 @@ public:
 	static constexpr int KEYBITS = 256;
 	static constexpr int AES_BLOCK_SIZE = 16;
 
-	static std::string base64Encode (const std::string &in);
+	static std::string base64Encode (const std::string &in, bool useBase64url = false);
 	static std::string base64Decode (const std::string &in);
 
 	static std::string aesEncrypt (const std::string &in, std::string &pass);

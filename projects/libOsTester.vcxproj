@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="..\test\src\001_CommandLineParser.cpp" />
     <ClCompile Include="..\test\src\002_Properties.cpp" />
+    <ClCompile Include="..\test\src\003_BuiltInEncryption.cpp" />
     <ClCompile Include="..\test\src\maintester.cpp" />
   </ItemGroup>
   <ItemGroup>
