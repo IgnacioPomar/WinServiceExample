@@ -125,12 +125,15 @@ std::string BuiltInEncryption::aesDecrypt (const std::string & in, std::string &
 		offset += AES_BLOCK_SIZE;
 	}
 
-	//In the final char is the number of chars to rease
-	char bytesToErase = out.back ();
 
-	//Erase everything from the first null to the end.... as it should be a plain c str
-	out.erase (out.size () - bytesToErase);
-	//out.erase (std::find (out.begin (), out.end (), '\0'), out.end ());
+	if (out.size () > 0)
+	{
+		//In the final char is the number of chars to rease
+		char bytesToErase = out.back ();
+
+		//Erase everything from the first null to the end.... as it should be a plain c str
+		out.erase (out.size () - bytesToErase);
+	}
 	return out;
 }
 
