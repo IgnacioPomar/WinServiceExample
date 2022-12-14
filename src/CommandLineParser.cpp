@@ -24,7 +24,9 @@ public:
 	Option (const char * opt, const char * longOpt, const char * description, bool isRequired, int args);
 
 	//only for the STL map interface
-	Option () {};
+	Option ()
+	{
+	};
 
 	//definition
 	std::string opt;
@@ -99,6 +101,8 @@ typedef std::map<std::string, Option*> mapOpcs;
 class LIBOS_LOCAL CommandLineParserPrivateData
 {
 public:
+	bool isStrictMode;
+
 	const char * argv_0 = "";
 	bool hasNotExpectedOpts = false;
 	std::list<Option> options;
@@ -138,9 +142,10 @@ Option * CommandLineParserPrivateData::findOpt (std::string opt)
 /**
  * Constructor: create the private data object
  */
-CommandLineParser::CommandLineParser ()
+CommandLineParser::CommandLineParser (bool isStrictMode)
 {
 	this->pd = new CommandLineParserPrivateData ();
+	this->pd->isStrictMode = isStrictMode;
 }
 
 
@@ -173,8 +178,8 @@ void CommandLineParser::addOption (const char * opt, const char * longOpt, const
 	pd->options.push_back (option);
 	Option * optionStlPointer = &pd->options.back ();
 
-	pd->shortOptAccess[option.opt] = optionStlPointer;
-	pd->longOptAccess[option.longOpt] = optionStlPointer;
+	pd->shortOptAccess [option.opt] = optionStlPointer;
+	pd->longOptAccess [option.longOpt] = optionStlPointer;
 }
 
 
@@ -200,7 +205,7 @@ void CommandLineParser::reset ()
  * \return true: the parse was succesful
  *        false: error parsing arguments (possible lack of parameters)
  */
-bool CommandLineParser::parse (int argc, const char * argv[])
+bool CommandLineParser::parse (int argc, const char * argv [])
 {
 	if (argc < 1)
 	{
@@ -208,26 +213,26 @@ bool CommandLineParser::parse (int argc, const char * argv[])
 	}
 
 	//YAGNI: May be we must do a better search of the executable name
-	pd->argv_0 = argv[0];
+	pd->argv_0 = argv [0];
 
 	Option * currOpt = nullptr;
 	for (int i = 1; i < argc; i++)
 	{
-		const char * cmd = argv[i];
+		const char * cmd = argv [i];
 		bool isOpt = false;
 		int offset = 0;
 
 		//check if is new option
-		if (cmd[0] == '/')
+		if (cmd [0] == '/')
 		{
 			isOpt = true;
 			offset = 1;
 		}
-		else if (cmd[0] == '-')
+		else if (cmd [0] == '-')
 		{
 			isOpt = true;
 			offset = 1;
-			if (cmd[offset] == '-') offset++;
+			if (cmd [offset] == '-') offset++;
 		}
 
 		if (!isOpt)
@@ -243,7 +248,7 @@ bool CommandLineParser::parse (int argc, const char * argv[])
 		}
 		else
 		{
-			currOpt = parseOpt (&cmd[offset]);
+			currOpt = parseOpt (&cmd [offset]);
 		}
 
 		if (currOpt != nullptr)
@@ -316,6 +321,12 @@ Option * CommandLineParser::parseOpt (const char * cleanopt)
  */
 bool CommandLineParser::checkOptions ()
 {
+	if (pd->isStrictMode)
+	{
+		if (pd->hasNotExpectedOpts) return false;
+		if (pd->namelessValues.size () > 0) return false;
+	}
+
 	for (auto& opts : pd->options)
 	{
 		Option &opt = opts;
@@ -402,7 +413,7 @@ void CommandLineParser::printHelp ()
  * \return true: the parse was succesful
  *        false: error parsing arguments (possible lack of parameters)
  */
-bool CommandLineParser::parseOrHelp (int argc, const char * argv[])
+bool CommandLineParser::parseOrHelp (int argc, const char * argv [])
 {
 	if (parse (argc, argv))
 	{
@@ -445,7 +456,7 @@ int CommandLineParser::getNumOptionValues (const char * opt)
 	Option * pOpc = pd->findOpt (opt);
 	if (pOpc != nullptr)
 	{
-		return (int)pOpc->values.size ();
+		return (int) pOpc->values.size ();
 	}
 	else return 0;
 }
@@ -463,7 +474,7 @@ const char * CommandLineParser::getOptionValue (const char * opt, int pos)
 	Option * pOpc = pd->findOpt (opt);
 	if (pOpc != nullptr)
 	{
-		if ((size_t)pos < pOpc->values.size ())
+		if ((size_t) pos < pOpc->values.size ())
 		{
 			return pOpc->values.at (pos).c_str ();
 		}
@@ -480,7 +491,7 @@ const char * CommandLineParser::getOptionValue (const char * opt, int pos)
 
 int CommandLineParser::getNumNameless ()
 {
-	return (int)pd->namelessValues.size ();
+	return (int) pd->namelessValues.size ();
 }
 
 /**
@@ -491,7 +502,7 @@ int CommandLineParser::getNumNameless ()
  */
 const char * CommandLineParser::getNamelessValue (int pos)
 {
-	if ((size_t)pos < pd->namelessValues.size ())
+	if ((size_t) pos < pd->namelessValues.size ())
 	{
 		return pd->namelessValues.at (pos).c_str ();
 	}

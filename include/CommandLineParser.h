@@ -30,16 +30,16 @@ class Option;
 class LIBOS_API CommandLineParser
 {
 public:
-	CommandLineParser ();
+	CommandLineParser (bool isStrictMode = false);
 	~CommandLineParser ();
 
 	void addOption (const char * opt, const char * longOpt, const char * description, bool isRequired = false, int args = 0);
 
 	void reset ();
 
-	bool parse (int argc, const char * argv[]);
+	bool parse (int argc, const char * argv []);
 	void printHelp ();
-	bool parseOrHelp (int argc, const char * argv[]);
+	bool parseOrHelp (int argc, const char * argv []);
 
 	bool hasOption (const char * opt);
 	int getNumOptionValues (const char * opt);

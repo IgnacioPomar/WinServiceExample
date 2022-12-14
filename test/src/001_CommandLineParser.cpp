@@ -99,5 +99,28 @@ UNIT_TEST_CASE (TestCommandLineParser)
 	}
 
 
+	// Test strict mode: disallow extra options (With extra option)
+	{
+		CommandLineParser cmdLine (true);
+		cmdLine.addOption ("a", "", "set");
+		cmdLine.addOption ("b", "", "not set");
+
+		const char * argv [] = {"execName", "-a", "-e"};
+		UNIT_CHECK (!cmdLine.parse (arrlen (argv), argv));
+	}
+
+	// Test strict mode: disallow extra options (With extra Values)
+	{
+		CommandLineParser cmdLine (true);
+		cmdLine.addOption ("a", "", "set");
+		cmdLine.addOption ("b", "", "not set");
+		cmdLine.addOption ("c", "", "", false, 2);
+		cmdLine.addOption ("d", "", "", false, 1);
+		cmdLine.addOption ("e", "", "", false, -1);
+
+		const char * argv [] = {"execName", "-a", "-e", "val1", "val2", "val3", "-d", "val1", "extra1", "--c=val1,val2", "extra2" , "extra3"};
+		UNIT_CHECK (!cmdLine.parse (arrlen (argv), argv));
+	}
+
 
 }
