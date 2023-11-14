@@ -69,7 +69,7 @@ class LIBOS_LOCAL PropertyPrivateData
 public:
 	Values vals;
 	Lines lines;
-	bool isLoadedFromFile;
+	bool isLoadedFromFile = false;
 
 	void store (std::string key, std::string value, std::string comment);
 	bool isCommentline (std::string & line);
@@ -136,7 +136,10 @@ void trim (std::string &str)
 	std::size_t end = str.find_last_not_of (" \n\r\t");
 
 	if ((std::string::npos == start) || (std::string::npos == end))
-		str.empty ();
+	{
+		str.clear();
+	}
+		
 	else
 	{
 		str.erase (++end);

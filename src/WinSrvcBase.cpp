@@ -5,7 +5,7 @@
 
 
 
-
+#include <string>
 #include <chrono>	//Para sleep en standAloneRun
 #include <thread>	//Para sleep en standAloneRun
 

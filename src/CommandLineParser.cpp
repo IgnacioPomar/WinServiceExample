@@ -24,9 +24,7 @@ public:
 	Option (const char * opt, const char * longOpt, const char * description, bool isRequired, int args);
 
 	//only for the STL map interface
-	Option ()
-	{
-	};
+	Option ();
 
 	//definition
 	std::string opt;
@@ -54,6 +52,12 @@ Option::Option (const char * opt, const char * longOpt, const char * description
 	reset ();
 }
 
+Option::Option() :
+	opt(""), longOpt(""), description(""), isRequired(false), args(0)
+{
+	reset();
+}
+
 /**
  * Terter prupose: Clears the parse efect.
  */
@@ -61,7 +65,7 @@ void Option::reset ()
 {
 	isSet = false;
 	numValues = 0;
-	values.empty ();
+	values.clear ();
 }
 
 /**
@@ -101,7 +105,7 @@ typedef std::map<std::string, Option*> mapOpcs;
 class LIBOS_LOCAL CommandLineParserPrivateData
 {
 public:
-	bool isStrictMode;
+	bool isStrictMode = false;
 
 	const char * argv_0 = "";
 	bool hasNotExpectedOpts = false;
@@ -184,11 +188,11 @@ void CommandLineParser::addOption (const char * opt, const char * longOpt, const
 
 
 /**
- * Terter prupose: Clears the parse efect.
+ * Tester prupose: Clears the parse efect.
  */
 void CommandLineParser::reset ()
 {
-	pd->namelessValues.empty ();
+	pd->namelessValues.clear ();
 	pd->hasNotExpectedOpts = false;
 	for (auto& opts : pd->options)
 	{

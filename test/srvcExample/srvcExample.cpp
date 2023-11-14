@@ -51,8 +51,16 @@ bool SrvcEjemplo::init (int argc, char * argv[])
 #include <chrono>
 class SrvcDta
 {
+
 public:
+	std::thread runner;
+
 	bool isonline = true;
+
+	SrvcDta() : runner()
+	{
+		runner = std::thread { &SrvcDta::foo, this };
+	}
 
 	void foo ()
 	{
@@ -74,7 +82,9 @@ bool SrvcEjemplo::stop (bool isPaused)
 		srvcDta->isonline = false;
 
 		//Esperamnos a que cierre
-		std::this_thread::sleep_for (std::chrono::seconds (1));
+		//std::this_thread::sleep_for (std::chrono::seconds (1));
+		srvcDta->runner.join();
+
 
 		//y eliminamos
 		delete srvcDta;
@@ -91,7 +101,9 @@ bool SrvcEjemplo::run ()
 	varIsOnline = true;
 	srvcDta = new SrvcDta ();
 
-	std::thread (&SrvcDta::foo, srvcDta);
+
+
+	//runner.join();
 
 	return true;
 }
