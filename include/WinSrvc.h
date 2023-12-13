@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: WinSrvc.h
 *	Description	: Template que debe usarse para cerar los servicios
 ********************************************************************************************/
@@ -29,7 +30,7 @@ private:
 		static SERVICE_STATUS srvcStatus;
 		return srvcStatus;
 	}
-	static SERVICE_STATUS_HANDLE&  getSrvcStatusHandle ()
+	static SERVICE_STATUS_HANDLE& getSrvcStatusHandle ()
 	{
 		static SERVICE_STATUS_HANDLE srvcStatusHandle;
 		return srvcStatusHandle;
@@ -54,11 +55,11 @@ public:
 	*/
 	static bool runAsService ()
 	{
-		const char * serviceName = getStaticInstance ().getName ();
+		const char* serviceName = getStaticInstance ().getName ();
 
-		SERVICE_TABLE_ENTRYA dispatchTable[] =
+		SERVICE_TABLE_ENTRYA dispatchTable [] =
 		{
-			{ (LPSTR)serviceName , (LPSERVICE_MAIN_FUNCTION)srvcMain },
+			{ (LPSTR) serviceName , (LPSERVICE_MAIN_FUNCTION) srvcMain },
 			{ NULL, NULL }
 		};
 
@@ -88,12 +89,12 @@ public:
 		srvcStatus.dwWaitHint = 10000;
 #endif
 
-		WinSrvcBase &srvc = getStaticInstance ();
+		WinSrvcBase& srvc = getStaticInstance ();
 		SERVICE_STATUS_HANDLE& srvcStatusHandle = getSrvcStatusHandle ();
 
 		srvcStatusHandle = RegisterServiceCtrlHandlerEx (srvc.getName (), ctrlHandlerEx, &srvc);
 
-		if (srvcStatusHandle == (SERVICE_STATUS_HANDLE)0)
+		if (srvcStatusHandle == (SERVICE_STATUS_HANDLE) 0)
 		{
 			return;
 		}
@@ -145,7 +146,7 @@ public:
 	*/
 	static DWORD WINAPI ctrlHandlerEx (DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext)
 	{
-		WinSrvcBase &srvc = *(WinSrvcBase *)lpContext;
+		WinSrvcBase& srvc = *(WinSrvcBase*) lpContext;
 		SERVICE_STATUS& srvcStatus = getSrvcStatus ();
 		SERVICE_STATUS_HANDLE& srvcStatusHandle = getSrvcStatusHandle ();
 
@@ -195,7 +196,7 @@ public:
 
 			//---------------- Funciones extendidas ----------------
 		case SERVICE_CONTROL_SESSIONCHANGE:
-			srvc.sessionChange (dwEventType, ((WTSSESSION_NOTIFICATION  *)lpEventData)->dwSessionId);
+			srvc.sessionChange (dwEventType, ((WTSSESSION_NOTIFICATION*) lpEventData)->dwSessionId);
 			return  NO_ERROR;
 			//TODO: Modificar esto
 			//return ERROR_CALL_NOT_IMPLEMENTED;
@@ -213,21 +214,21 @@ public:
 	//Metodos para administrar el servicio
 	static bool install ()
 	{
-		WinSrvcBase &srvc = getStaticInstance ();
+		WinSrvcBase& srvc = getStaticInstance ();
 
 		HMODULE hModule = GetModuleHandle (NULL);
-		CHAR path[MAX_PATH];
+		CHAR path [MAX_PATH];
 		GetModuleFileName (hModule, path, MAX_PATH);
 
 		return WinSrvcUtls::install (srvc.getName (), srvc.getDisplayName (),
-			srvc.getDescription (), path, srvc.isManual (),
-			srvc.getDepends (), srvc.getNumDepends ());
+									 srvc.getDescription (), path, srvc.isManual (),
+									 srvc.getDepends (), srvc.getNumDepends ());
 	}
 
 
 	static bool uninstall ()
 	{
-		WinSrvcBase &srvc = getStaticInstance ();
+		WinSrvcBase& srvc = getStaticInstance ();
 		return WinSrvcUtls::uninstall (srvc.getName ());
 	}
 
@@ -238,7 +239,7 @@ public:
 #include "CommandLineParser.h"
 
 template <class T>
-int srvcMain (int argc, char * argv[])
+int srvcMain (int argc, char* argv [])
 {
 	if (argc > 1)
 	{
@@ -248,7 +249,7 @@ int srvcMain (int argc, char * argv[])
 		cmdLine.addOption ("dbg", "DEBUG", "launch in debug mode (without service)");
 
 
-		cmdLine.parse (argc, (const char **)argv);
+		cmdLine.parse (argc, (const char**) argv);
 		if (cmdLine.hasOption ("i"))
 		{
 			if (WinSrvc<T>::install ())

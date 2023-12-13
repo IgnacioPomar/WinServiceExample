@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: PropertiesSecureStr.h
 *	Description	:  store the configurable application like in java .properties
 ********************************************************************************************/
@@ -24,8 +25,8 @@ class LIBOS_LOCAL PropertySecureStr
 {
 public:
 #ifdef HAS_CRYPTOCPP
-	static std::string aesEncode (const std::string &in, std::string pass);
-	static std::string aesDecode (const std::string &in, std::string pass);
+	static std::string aesEncode (const std::string& in, std::string pass);
+	static std::string aesDecode (const std::string& in, std::string pass);
 #endif
 	static std::string encrypt (std::string in, std::string pass);
 	static std::string decrypt (std::string in, std::string pass);

@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: CommandLineParser.h
 *	Description	: parse command line arguments inspired in apache commons cli
 ********************************************************************************************/
@@ -33,28 +34,28 @@ public:
 	CommandLineParser (bool isStrictMode = false);
 	~CommandLineParser ();
 
-	void addOption (const char * opt, const char * longOpt, const char * description, bool isRequired = false, int args = 0);
+	void addOption (const char* opt, const char* longOpt, const char* description, bool isRequired = false, int args = 0);
 
 	void reset ();
 
-	bool parse (int argc, const char * argv []);
+	bool parse (int argc, const char* argv []);
 	void printHelp ();
-	bool parseOrHelp (int argc, const char * argv []);
+	bool parseOrHelp (int argc, const char* argv []);
 
-	bool hasOption (const char * opt);
-	int getNumOptionValues (const char * opt);
-	const char * getOptionValue (const char * opt, int pos = 0);
+	bool hasOption (const char* opt);
+	int getNumOptionValues (const char* opt);
+	const char* getOptionValue (const char* opt, int pos = 0);
 
 	int getNumNameless ();
-	const char * getNamelessValue (int pos = 0);
+	const char* getNamelessValue (int pos = 0);
 
 private:
-	CommandLineParserPrivateData * pd;
+	CommandLineParserPrivateData* pd;
 
 	static constexpr const char VALUE_SEPARATOR = ',';
 
 	bool checkOptions ();
-	Option * parseOpt (const char * cleanopt);
+	Option* parseOpt (const char* cleanopt);
 
 };
 

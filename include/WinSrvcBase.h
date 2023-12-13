@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: winSrvcBase.h
 *	Description	: Clase base para que hereden los srevicios
 ********************************************************************************************/
@@ -33,7 +34,7 @@ public:
 	* Se ejecutará antes de lanzar el servicio por primera vez: el objetivo es inicializar datos
 	*  \return	si devuelve false, el servicio no se iniciará, por lo que debe devolver true
 	*/
-	virtual bool init (int argc, char * argv[]) = 0;
+	virtual bool init (int argc, char* argv []) = 0;
 
 	/**
 	* Cuando desde el SCM se reciba una orden de pausado, se llamará a esta función
@@ -103,7 +104,7 @@ public:
 	*/
 	void sessionChange (unsigned long changeType, unsigned long sessionId);
 
-	virtual void sessionChange (SESS_CHANGE_TYPE change, const char * user) = 0;
+	virtual void sessionChange (SESS_CHANGE_TYPE change, const char* user) = 0;
 };
 
 

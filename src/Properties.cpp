@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: PropertyConfiguration.cpp
 *	Description	:  store the configurable application like in java .properties
 ********************************************************************************************/
@@ -20,9 +21,9 @@
 #include "Properties.h"
 
 
-static constexpr const char * SPACE_CHARS = " \t";
-static constexpr const char * COMMENT_CHARS = "#!";
-static constexpr const char * EQUAL_CHARS = ":=";
+static constexpr const char* SPACE_CHARS = " \t";
+static constexpr const char* COMMENT_CHARS = "#!";
+static constexpr const char* EQUAL_CHARS = ":=";
 
 class LIBOS_LOCAL PropLine
 {
@@ -31,20 +32,20 @@ public:
 	std::string value;
 	std::string comment;
 
-	PropLine (std::string &key, std::string &value, std::string &comment);
-	friend std::ostream & operator << (std::ostream &out, const PropLine &line);
+	PropLine (std::string& key, std::string& value, std::string& comment);
+	friend std::ostream& operator << (std::ostream& out, const PropLine& line);
 };
 
-typedef std::unordered_map <std::string, std::string * > Values;
+typedef std::unordered_map <std::string, std::string* > Values;
 typedef std::list <PropLine> Lines;
 
 
-PropLine::PropLine (std::string & key, std::string & value, std::string & comment) :
+PropLine::PropLine (std::string& key, std::string& value, std::string& comment) :
 	key (key), value (value), comment (comment)
 {
 }
 
-std::ostream & operator<<(std::ostream & out, const PropLine & line)
+std::ostream& operator<<(std::ostream& out, const PropLine& line)
 {
 	if (line.key.size () > 0)
 	{
@@ -72,7 +73,7 @@ public:
 	bool isLoadedFromFile = false;
 
 	void store (std::string key, std::string value, std::string comment);
-	bool isCommentline (std::string & line);
+	bool isCommentline (std::string& line);
 };
 
 void PropertyPrivateData::store (std::string key, std::string value, std::string comment)
@@ -90,8 +91,8 @@ void PropertyPrivateData::store (std::string key, std::string value, std::string
 		{
 			PropLine line (key, value, comment);
 			lines.push_back (line);
-			PropLine &lineInVector = lines.back ();
-			vals[key] = &lineInVector.value;
+			PropLine& lineInVector = lines.back ();
+			vals [key] = &lineInVector.value;
 		}
 		else
 		{
@@ -100,7 +101,7 @@ void PropertyPrivateData::store (std::string key, std::string value, std::string
 	}
 }
 
-bool PropertyPrivateData::isCommentline (std::string & line)
+bool PropertyPrivateData::isCommentline (std::string& line)
 {
 	std::size_t comentPos = line.find_first_of (COMMENT_CHARS);
 	std::size_t startPos = line.find_first_not_of (SPACE_CHARS);
@@ -116,7 +117,7 @@ bool PropertyPrivateData::isCommentline (std::string & line)
 * \param    [in]		to		replacement
 * \see		https://stackoverflow.com/a/24315631
 */
-void replaceAll (std::string & str, const std::string& from, const std::string& to)
+void replaceAll (std::string& str, const std::string& from, const std::string& to)
 {
 	size_t start_pos = 0;
 	while ((start_pos = str.find (from, start_pos)) != std::string::npos)
@@ -130,16 +131,16 @@ void replaceAll (std::string & str, const std::string& from, const std::string& 
 * Trim spaces
 * \param    [in/out]   str
 */
-void trim (std::string &str)
+void trim (std::string& str)
 {
 	std::size_t start = str.find_first_not_of (" \n\r\t");
 	std::size_t end = str.find_last_not_of (" \n\r\t");
 
 	if ((std::string::npos == start) || (std::string::npos == end))
 	{
-		str.clear();
+		str.clear ();
 	}
-		
+
 	else
 	{
 		str.erase (++end);
@@ -151,7 +152,7 @@ void trim (std::string &str)
 * Add the standar escape secuence in the  .properties standar
 * \param    [in/out]   str
 */
-void escape (std::string &str)
+void escape (std::string& str)
 {
 	//TODO: 
 
@@ -161,7 +162,7 @@ void escape (std::string &str)
 * Erase the standar escape secuence in the  .properties standar
 * \param    [in/out]   str
 */
-void unescape (std::string &str)
+void unescape (std::string& str)
 {
 	replaceAll (str, "\\\\", "\\");
 	replaceAll (str, "\\ ", " ");
@@ -191,7 +192,7 @@ Properties::~Properties ()
 * \param    [in]   defaultValue
 * \return
 */
-int Properties::getInt (const char * key, int defaultValue)
+int Properties::getInt (const char* key, int defaultValue)
 {
 	Values::const_iterator got = pd->vals.find (key);
 	if (got == pd->vals.end ())
@@ -211,7 +212,7 @@ int Properties::getInt (const char * key, int defaultValue)
 * \param    [in]   defaultValue
 * \return
 */
-double Properties::getDouble (const char * key, double defaultValue)
+double Properties::getDouble (const char* key, double defaultValue)
 {
 	Values::const_iterator got = pd->vals.find (key);
 	if (got == pd->vals.end ())
@@ -232,7 +233,7 @@ double Properties::getDouble (const char * key, double defaultValue)
 * \param    [in]   defaultValue
 * \return
 */
-const char * Properties::getStr (const char * key, const char * defaultValue)
+const char* Properties::getStr (const char* key, const char* defaultValue)
 {
 	Values::const_iterator got = pd->vals.find (key);
 	if (got == pd->vals.end ())
@@ -242,7 +243,7 @@ const char * Properties::getStr (const char * key, const char * defaultValue)
 	}
 	else
 	{
-		return (char *)(*got->second).c_str ();
+		return (char*) (*got->second).c_str ();
 	}
 }
 
@@ -255,7 +256,7 @@ const char * Properties::getStr (const char * key, const char * defaultValue)
 * \param    [in]   defaultValue
 * \return
 */
-bool Properties::getBool (const char * key, bool defaultValue)
+bool Properties::getBool (const char* key, bool defaultValue)
 {
 	Values::const_iterator got = pd->vals.find (key);
 	if (got != pd->vals.end ())
@@ -280,9 +281,9 @@ bool Properties::getBool (const char * key, bool defaultValue)
 * \param    [in]   key
 * \param    [in]   value
 */
-void Properties::setBool (const char * key, bool value)
+void Properties::setBool (const char* key, bool value)
 {
-	const char * v = (value) ? "true" : "false";
+	const char* v = (value) ? "true" : "false";
 	pd->store (key, v, "");
 }
 
@@ -291,7 +292,7 @@ void Properties::setBool (const char * key, bool value)
 * \param    [in]   key
 * \param    [in]   value
 */
-void Properties::setInt (const char * key, int value)
+void Properties::setInt (const char* key, int value)
 {
 	pd->store (key, std::to_string (value), "");
 }
@@ -302,7 +303,7 @@ void Properties::setInt (const char * key, int value)
 * \param    [in]   key
 * \param    [in]   value
 */
-void Properties::setDouble (const char * key, double value)
+void Properties::setDouble (const char* key, double value)
 {
 	pd->store (key, std::to_string (value), "");
 }
@@ -313,7 +314,7 @@ void Properties::setDouble (const char * key, double value)
 * \param    [in]   key
 * \param    [in]   value
 */
-void Properties::setStr (const char * key, const char * value)
+void Properties::setStr (const char* key, const char* value)
 {
 	pd->store (key, value, "");
 }
@@ -332,7 +333,7 @@ void Properties::setStr (const char * key, const char * value)
 * \param    [in]   key
 * \param    [in]   value
 */
-void Properties::setSecureStr (const char * key, const char * v, const char* secret)
+void Properties::setSecureStr (const char* key, const char* v, const char* secret)
 {
 	std::string crypted = PropertySecureStr::encrypt (v, secret);
 	this->setStr (key, crypted.c_str ());
@@ -346,7 +347,7 @@ void Properties::setSecureStr (const char * key, const char * v, const char* sec
 * \param    [in]   defaultValue
 * \return
 */
-void Properties::getSecureStr (const char * key, const char * defaultValue, const char* secret, std::string & out)
+void Properties::getSecureStr (const char* key, const char* defaultValue, const char* secret, std::string& out)
 {
 	std::string crypted = this->getStr (key, defaultValue);
 	out = PropertySecureStr::decrypt (crypted, secret);
@@ -368,7 +369,7 @@ bool Properties::isLoadedFromFile ()
 *
 * \param    [in]   propfileName		file name and path to load
 */
-void Properties::load (const char * propfileName)
+void Properties::load (const char* propfileName)
 {
 	std::string linea;
 	std::ifstream propFile (propfileName);
@@ -447,7 +448,7 @@ void Properties::load (const char * propfileName)
 * Save to disk the propfile
 * \param    [in]   outFile		filename to save
 */
-void Properties::save (const char * propertiesFile)
+void Properties::save (const char* propertiesFile)
 {
 	std::ofstream propFile (propertiesFile);
 	if (propFile.is_open ())

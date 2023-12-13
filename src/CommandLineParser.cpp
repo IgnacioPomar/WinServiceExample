@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: CommandLineParser.cpp
 *	Description	: parse command line arguments
 ********************************************************************************************/
@@ -21,7 +22,7 @@ class LIBOS_LOCAL Option
 public:
 
 	//Constructor
-	Option (const char * opt, const char * longOpt, const char * description, bool isRequired, int args);
+	Option (const char* opt, const char* longOpt, const char* description, bool isRequired, int args);
 
 	//only for the STL map interface
 	Option ();
@@ -46,16 +47,16 @@ public:
 /**
  * Constructor. Init the option
  */
-Option::Option (const char * opt, const char * longOpt, const char * description, bool isRequired, int args) :
+Option::Option (const char* opt, const char* longOpt, const char* description, bool isRequired, int args) :
 	opt (opt), longOpt (longOpt), description (description), isRequired (isRequired), args (args)
 {
 	reset ();
 }
 
-Option::Option() :
-	opt(""), longOpt(""), description(""), isRequired(false), args(0)
+Option::Option () :
+	opt (""), longOpt (""), description (""), isRequired (false), args (0)
 {
-	reset();
+	reset ();
 }
 
 /**
@@ -107,7 +108,7 @@ class LIBOS_LOCAL CommandLineParserPrivateData
 public:
 	bool isStrictMode = false;
 
-	const char * argv_0 = "";
+	const char* argv_0 = "";
 	bool hasNotExpectedOpts = false;
 	std::list<Option> options;
 	mapOpcs shortOptAccess;
@@ -124,7 +125,7 @@ public:
  * \param [in] opt    option name. May be long or short
  * \return pointer to the parsed option
  */
-Option * CommandLineParserPrivateData::findOpt (std::string opt)
+Option* CommandLineParserPrivateData::findOpt (std::string opt)
 {
 	mapOpcs::iterator it = shortOptAccess.find (opt);
 	if (it != shortOptAccess.end ())
@@ -175,12 +176,12 @@ CommandLineParser::~CommandLineParser ()
  *                               0   none aditional value
  *                               n   If a positive number, it will accep that as fixed number of parameters
  */
-void CommandLineParser::addOption (const char * opt, const char * longOpt, const char * description, bool isRequired, int args)
+void CommandLineParser::addOption (const char* opt, const char* longOpt, const char* description, bool isRequired, int args)
 {
 	Option option (opt, longOpt, description, isRequired, args);
 
 	pd->options.push_back (option);
-	Option * optionStlPointer = &pd->options.back ();
+	Option* optionStlPointer = &pd->options.back ();
 
 	pd->shortOptAccess [option.opt] = optionStlPointer;
 	pd->longOptAccess [option.longOpt] = optionStlPointer;
@@ -209,7 +210,7 @@ void CommandLineParser::reset ()
  * \return true: the parse was succesful
  *        false: error parsing arguments (possible lack of parameters)
  */
-bool CommandLineParser::parse (int argc, const char * argv [])
+bool CommandLineParser::parse (int argc, const char* argv [])
 {
 	if (argc < 1)
 	{
@@ -219,10 +220,10 @@ bool CommandLineParser::parse (int argc, const char * argv [])
 	//YAGNI: May be we must do a better search of the executable name
 	pd->argv_0 = argv [0];
 
-	Option * currOpt = nullptr;
+	Option* currOpt = nullptr;
 	for (int i = 1; i < argc; i++)
 	{
-		const char * cmd = argv [i];
+		const char* cmd = argv [i];
 		bool isOpt = false;
 		int offset = 0;
 
@@ -273,12 +274,12 @@ bool CommandLineParser::parse (int argc, const char * argv [])
  * \param [in] cleanopt    option name without special chars
  * \return pointer to the parsed option
  */
-Option * CommandLineParser::parseOpt (const char * cleanopt)
+Option* CommandLineParser::parseOpt (const char* cleanopt)
 {
 	std::string cleanCmd = cleanopt;
 	std::string vals;
 	bool hasVals = false;
-	Option * retVal = nullptr;
+	Option* retVal = nullptr;
 
 	std::string::size_type pos = cleanCmd.find ('=');
 
@@ -333,7 +334,7 @@ bool CommandLineParser::checkOptions ()
 
 	for (auto& opts : pd->options)
 	{
-		Option &opt = opts;
+		Option& opt = opts;
 
 		if (opt.isRequired && !opt.isSet)
 		{
@@ -361,7 +362,7 @@ void CommandLineParser::printHelp ()
 	size_t longNameLen = 0;
 	for (auto& opts : pd->options)
 	{
-		Option &opt = opts;
+		Option& opt = opts;
 		if (opt.opt.size () > nameLen)
 		{
 			nameLen = opt.opt.size ();
@@ -375,8 +376,8 @@ void CommandLineParser::printHelp ()
 	//Now, we print
 	for (auto& opts : pd->options)
 	{
-		Option &opt = opts;
-		const char * sep = ",";
+		Option& opt = opts;
+		const char* sep = ",";
 
 		//Opt name
 		size_t optLen = opt.opt.size ();
@@ -417,7 +418,7 @@ void CommandLineParser::printHelp ()
  * \return true: the parse was succesful
  *        false: error parsing arguments (possible lack of parameters)
  */
-bool CommandLineParser::parseOrHelp (int argc, const char * argv [])
+bool CommandLineParser::parseOrHelp (int argc, const char* argv [])
 {
 	if (parse (argc, argv))
 	{
@@ -438,9 +439,9 @@ bool CommandLineParser::parseOrHelp (int argc, const char * argv [])
   * \param [in] opt    Short or long name of the argument
  * \return true or false
  */
-bool CommandLineParser::hasOption (const char * opt)
+bool CommandLineParser::hasOption (const char* opt)
 {
-	Option * pOpc = pd->findOpt (opt);
+	Option* pOpc = pd->findOpt (opt);
 	if (pOpc != nullptr)
 	{
 		return pOpc->isSet;
@@ -455,9 +456,9 @@ bool CommandLineParser::hasOption (const char * opt)
  * \param [in] opt    Short or long name of the argument
  * \return number of values
  */
-int CommandLineParser::getNumOptionValues (const char * opt)
+int CommandLineParser::getNumOptionValues (const char* opt)
 {
-	Option * pOpc = pd->findOpt (opt);
+	Option* pOpc = pd->findOpt (opt);
 	if (pOpc != nullptr)
 	{
 		return (int) pOpc->values.size ();
@@ -473,9 +474,9 @@ int CommandLineParser::getNumOptionValues (const char * opt)
  * \param [in] pos    position of the value
  * \return nullptr in error case, the value otherwise
  */
-const char * CommandLineParser::getOptionValue (const char * opt, int pos)
+const char* CommandLineParser::getOptionValue (const char* opt, int pos)
 {
-	Option * pOpc = pd->findOpt (opt);
+	Option* pOpc = pd->findOpt (opt);
 	if (pOpc != nullptr)
 	{
 		if ((size_t) pos < pOpc->values.size ())
@@ -504,7 +505,7 @@ int CommandLineParser::getNumNameless ()
  * \param [in] pos    position of the value
  * \return nullptr in error case, the value otherwise
  */
-const char * CommandLineParser::getNamelessValue (int pos)
+const char* CommandLineParser::getNamelessValue (int pos)
 {
 	if ((size_t) pos < pd->namelessValues.size ())
 	{
