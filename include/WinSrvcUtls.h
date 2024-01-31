@@ -24,6 +24,8 @@ public:
 	static bool start (const char* serviceName);
 	static bool stop (const char* serviceName, unsigned int maxMilisecondsWait);
 
+	static bool isInstalled (const char* serviceName);
+
 };
 
 

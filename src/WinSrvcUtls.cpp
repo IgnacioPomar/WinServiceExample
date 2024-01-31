@@ -29,7 +29,7 @@
  * \return true: El servicio ya existía o se ha instalado correctamente
  *        false: Error al instalar el servicio
  */
-bool WinSrvcUtls::install (const char * serviceName, const char * displayName, const char * description, const char * path, bool isManualService, const char * vSrvcsDepends [], int numDepends)
+bool WinSrvcUtls::install (const char* serviceName, const char* displayName, const char* description, const char* path, bool isManualService, const char* vSrvcsDepends [], int numDepends)
 {
 	SC_HANDLE handleSCManager;
 	SC_HANDLE handleService;
@@ -133,7 +133,7 @@ bool WinSrvcUtls::install (const char * serviceName, const char * displayName, c
  * \return  true: Se ha instalado correctamente (o si no existia previamente)
  *         false: No se ha logrado desinstalar
  */
-bool WinSrvcUtls::uninstall (const char * serviceName)
+bool WinSrvcUtls::uninstall (const char* serviceName)
 {
 	bool retVal = false;
 	SC_HANDLE handleSCManager = NULL;
@@ -222,7 +222,7 @@ bool WinSrvcUtls::uninstall (const char * serviceName)
  * \return true: si se logra detener el servicio
  *         false: si el servicio queda en ejecución
  */
-bool WinSrvcUtls::stop (const char * serviceName, unsigned int maxMilisecondsWait)
+bool WinSrvcUtls::stop (const char* serviceName, unsigned int maxMilisecondsWait)
 {
 	bool retVal = false;
 	SC_HANDLE handleSCManager = NULL;
@@ -301,6 +301,23 @@ bool WinSrvcUtls::stop (const char * serviceName, unsigned int maxMilisecondsWai
 }
 
 
+bool WinSrvcUtls::isInstalled (const char* serviceName)
+{
+	SC_HANDLE handleSCManager = NULL;
+	SC_HANDLE handleService = NULL;
+
+	// Obtenemos referencia al Service Control Manager
+	handleSCManager = OpenSCManager (NULL, NULL, GENERIC_EXECUTE);
+	if (handleSCManager == NULL)
+	{
+		return false;
+	}
+
+	handleService = OpenService (handleSCManager, serviceName, SERVICE_START);
+	return handleService != NULL;
+
+}
+
 
 /**
  * Lanza la ejecucion de un servicio
@@ -309,7 +326,7 @@ bool WinSrvcUtls::stop (const char * serviceName, unsigned int maxMilisecondsWai
  * \return true El servicio se ha ejecutado
  * false: el servicio no se esta ejecutando
  */
-bool WinSrvcUtls::start (const char * serviceName)
+bool WinSrvcUtls::start (const char* serviceName)
 {
 	bool retVal = false;
 	SC_HANDLE handleSCManager = NULL;
