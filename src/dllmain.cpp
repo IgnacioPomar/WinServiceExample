@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: dllmain.h
 *	Description	: Entry point of the dll
 ********************************************************************************************/
@@ -15,8 +16,8 @@
 
 
 BOOL APIENTRY DllMain (HMODULE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
+					   DWORD  ul_reason_for_call,
+					   LPVOID lpReserved
 )
 {
 	switch (ul_reason_for_call)

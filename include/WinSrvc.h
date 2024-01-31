@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: WinSrvc.h
 *	Description	: Template que debe usarse para cerar los servicios
 ********************************************************************************************/
@@ -58,7 +59,7 @@ public:
 
 		SERVICE_TABLE_ENTRYA dispatchTable [] =
 		{
-			{ (LPSTR) serviceName , (LPSERVICE_MAIN_FUNCTION) srvcMain },
+			{ (LPSTR)serviceName , (LPSERVICE_MAIN_FUNCTION)srvcMain },
 			{ NULL, NULL }
 		};
 
@@ -82,18 +83,18 @@ public:
 		srvcStatus.dwWin32ExitCode = 0;
 		srvcStatus.dwServiceSpecificExitCode = 0;
 		srvcStatus.dwCheckPoint = 0;
-#ifdef _DEBUG
+	#ifdef _DEBUG
 		srvcStatus.dwWaitHint = 0xffffffff;
-#else
+	#else
 		srvcStatus.dwWaitHint = 10000;
-#endif
+	#endif
 
 		WinSrvcBase& srvc = getStaticInstance ();
 		SERVICE_STATUS_HANDLE& srvcStatusHandle = getSrvcStatusHandle ();
 
 		srvcStatusHandle = RegisterServiceCtrlHandlerEx (srvc.getName (), ctrlHandlerEx, &srvc);
 
-		if (srvcStatusHandle == (SERVICE_STATUS_HANDLE) 0)
+		if (srvcStatusHandle == (SERVICE_STATUS_HANDLE)0)
 		{
 			return;
 		}
@@ -145,7 +146,7 @@ public:
 	*/
 	static DWORD WINAPI ctrlHandlerEx (DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext)
 	{
-		WinSrvcBase& srvc = *(WinSrvcBase*) lpContext;
+		WinSrvcBase& srvc = *(WinSrvcBase*)lpContext;
 		SERVICE_STATUS& srvcStatus = getSrvcStatus ();
 		SERVICE_STATUS_HANDLE& srvcStatusHandle = getSrvcStatusHandle ();
 
@@ -195,7 +196,7 @@ public:
 
 			//---------------- Funciones extendidas ----------------
 		case SERVICE_CONTROL_SESSIONCHANGE:
-			srvc.sessionChange (dwEventType, ((WTSSESSION_NOTIFICATION*) lpEventData)->dwSessionId);
+			srvc.sessionChange (dwEventType, ((WTSSESSION_NOTIFICATION*)lpEventData)->dwSessionId);
 			return  NO_ERROR;
 			//TODO: Modificar esto
 			//return ERROR_CALL_NOT_IMPLEMENTED;
@@ -254,7 +255,7 @@ int srvcMain (int argc, char* argv [])
 		cmdLine.addOption ("dbg", "DEBUG", "launch in debug mode (without service)");
 
 
-		cmdLine.parse (argc, (const char**) argv);
+		cmdLine.parse (argc, (const char**)argv);
 		if (cmdLine.hasOption ("i"))
 		{
 			if (WinSrvc<T>::install ())

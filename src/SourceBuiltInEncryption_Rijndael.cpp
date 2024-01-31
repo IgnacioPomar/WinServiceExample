@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: SourceBuiltInEncryption_Rijndael.cpp
 *	Description	: AES (rijndael) Encryption and Decryption
 *	License		: Public domain; no restrictions on use
@@ -8,7 +9,6 @@
 
 
 #include <stdio.h>
-
 #include "BuiltInEncryption.h"
 
 
@@ -16,11 +16,11 @@
 // bridge between the C implementation of rijndael (AES) algorithm and C++
 //-------------------------------------------------------------------------------
 
-void BuiltInEncryption::fillKeyFromPass (u8 * key, int keySize, std::string & pass)
+void BuiltInEncryption::fillKeyFromPass (u8* key, int keySize, std::string& pass)
 {
 	//YAGNI: Use a better key derivation function (KDF) instead 
-	const char * password = pass.c_str ();
-	const char * start = password;
+	const char* password = pass.c_str ();
+	const char* start = password;
 	u8 dancingChar = 9;
 	for (int i = 0; i < keySize; i++)
 	{
@@ -28,28 +28,28 @@ void BuiltInEncryption::fillKeyFromPass (u8 * key, int keySize, std::string & pa
 
 		dancingChar ^= *password;
 
-		key[i] = dancingChar;
+		key [i] = dancingChar;
 		password++;
 	}
 }
 
 
-std::string BuiltInEncryption::aesEncrypt (const std::string & in, std::string &pass)
+std::string BuiltInEncryption::aesEncrypt (const std::string& in, std::string& pass)
 {
 	std::string out;
-	u32 rk[RKLENGTH (KEYBITS)];
-	u8 key[KEYLENGTH (KEYBITS)];
+	u32 rk [RKLENGTH (KEYBITS)];
+	u8 key [KEYLENGTH (KEYBITS)];
 	fillKeyFromPass (key, sizeof (key), pass);
 
 	int nrounds = rijndaelSetupEncrypt (rk, key, KEYBITS);
 
 	//we call the cipher function for each chunk of data
-	int size = (int)in.size ();
+	int size = (int) in.size ();
 	int offset = 0;
-	const char * dta = in.c_str ();
+	const char* dta = in.c_str ();
 
-	unsigned char plaintext[AES_BLOCK_SIZE];
-	unsigned char ciphertext[AES_BLOCK_SIZE];
+	unsigned char plaintext [AES_BLOCK_SIZE];
+	unsigned char ciphertext [AES_BLOCK_SIZE];
 
 	bool hasEraseMark = false;
 
@@ -59,19 +59,19 @@ std::string BuiltInEncryption::aesEncrypt (const std::string & in, std::string &
 		for (j = 0; j < AES_BLOCK_SIZE; j++)
 		{
 			if (offset + j >= size) break;
-			plaintext[j] = dta[offset + j];
+			plaintext [j] = dta [offset + j];
 		}
 
 		if (j < AES_BLOCK_SIZE)
 		{
 			hasEraseMark = true;
-			plaintext[AES_BLOCK_SIZE - 1] = AES_BLOCK_SIZE - j;
+			plaintext [AES_BLOCK_SIZE - 1] = AES_BLOCK_SIZE - j;
 		}
 
 		rijndaelEncrypt (rk, nrounds, plaintext, ciphertext);
 
 		for (j = 0; j < AES_BLOCK_SIZE; j++)
-			out += ciphertext[j];
+			out += ciphertext [j];
 
 		offset += AES_BLOCK_SIZE;
 
@@ -80,47 +80,47 @@ std::string BuiltInEncryption::aesEncrypt (const std::string & in, std::string &
 	if (!hasEraseMark)
 	{
 		//We need another block with the size to rease
-		plaintext[AES_BLOCK_SIZE - 1] = AES_BLOCK_SIZE;
+		plaintext [AES_BLOCK_SIZE - 1] = AES_BLOCK_SIZE;
 
 		rijndaelEncrypt (rk, nrounds, plaintext, ciphertext);
 
 		for (int j = 0; j < AES_BLOCK_SIZE; j++)
-			out += ciphertext[j];
+			out += ciphertext [j];
 	}
 
 
 	return out;
 }
 
-std::string BuiltInEncryption::aesDecrypt (const std::string & in, std::string &pass)
+std::string BuiltInEncryption::aesDecrypt (const std::string& in, std::string& pass)
 {
 	std::string out;
-	unsigned long rk[RKLENGTH (KEYBITS)];
-	unsigned char key[KEYLENGTH (KEYBITS)];
+	unsigned long rk [RKLENGTH (KEYBITS)];
+	unsigned char key [KEYLENGTH (KEYBITS)];
 	fillKeyFromPass (key, sizeof (key), pass);
 
 	int nrounds = rijndaelSetupDecrypt (rk, key, KEYBITS);
 
 	//chunks to Decrypt must have AES_BLOCK_SIZE
-	int size = (int)in.size ();
+	int size = (int) in.size ();
 	int offset = 0;
-	const char * dta = in.c_str ();
+	const char* dta = in.c_str ();
 	while (offset < size)
 	{
-		unsigned char plaintext[AES_BLOCK_SIZE];
-		unsigned char ciphertext[AES_BLOCK_SIZE];
+		unsigned char plaintext [AES_BLOCK_SIZE];
+		unsigned char ciphertext [AES_BLOCK_SIZE];
 
 		int j;
 		for (j = 0; j < AES_BLOCK_SIZE; j++)
 		{
 			if (offset + j >= size) break;
-			ciphertext[j] = dta[offset + j];
+			ciphertext [j] = dta [offset + j];
 		}
 
 		rijndaelDecrypt (rk, nrounds, ciphertext, plaintext);
 
 		for (j = 0; j < AES_BLOCK_SIZE; j++)
-			out += plaintext[j];
+			out += plaintext [j];
 
 		offset += AES_BLOCK_SIZE;
 	}
@@ -148,7 +148,7 @@ std::string BuiltInEncryption::aesDecrypt (const std::string & in, std::string &
 typedef unsigned long u32;
 typedef unsigned char u8;
 
-static const u32 Te0[256] =
+static const u32 Te0 [256] =
 {
   0xc66363a5U, 0xf87c7c84U, 0xee777799U, 0xf67b7b8dU,
   0xfff2f20dU, 0xd66b6bbdU, 0xde6f6fb1U, 0x91c5c554U,
@@ -216,7 +216,7 @@ static const u32 Te0[256] =
   0x7bb0b0cbU, 0xa85454fcU, 0x6dbbbbd6U, 0x2c16163aU,
 };
 
-static const u32 Te1[256] =
+static const u32 Te1 [256] =
 {
   0xa5c66363U, 0x84f87c7cU, 0x99ee7777U, 0x8df67b7bU,
   0x0dfff2f2U, 0xbdd66b6bU, 0xb1de6f6fU, 0x5491c5c5U,
@@ -284,7 +284,7 @@ static const u32 Te1[256] =
   0xcb7bb0b0U, 0xfca85454U, 0xd66dbbbbU, 0x3a2c1616U,
 };
 
-static const u32 Te2[256] =
+static const u32 Te2 [256] =
 {
   0x63a5c663U, 0x7c84f87cU, 0x7799ee77U, 0x7b8df67bU,
   0xf20dfff2U, 0x6bbdd66bU, 0x6fb1de6fU, 0xc55491c5U,
@@ -352,7 +352,7 @@ static const u32 Te2[256] =
   0xb0cb7bb0U, 0x54fca854U, 0xbbd66dbbU, 0x163a2c16U,
 };
 
-static const u32 Te3[256] =
+static const u32 Te3 [256] =
 {
   0x6363a5c6U, 0x7c7c84f8U, 0x777799eeU, 0x7b7b8df6U,
   0xf2f20dffU, 0x6b6bbdd6U, 0x6f6fb1deU, 0xc5c55491U,
@@ -420,7 +420,7 @@ static const u32 Te3[256] =
   0xb0b0cb7bU, 0x5454fca8U, 0xbbbbd66dU, 0x16163a2cU,
 };
 
-static const u32 Te4[256] =
+static const u32 Te4 [256] =
 {
   0x63636363U, 0x7c7c7c7cU, 0x77777777U, 0x7b7b7b7bU,
   0xf2f2f2f2U, 0x6b6b6b6bU, 0x6f6f6f6fU, 0xc5c5c5c5U,
@@ -488,7 +488,7 @@ static const u32 Te4[256] =
   0xb0b0b0b0U, 0x54545454U, 0xbbbbbbbbU, 0x16161616U,
 };
 
-static const u32 Td0[256] =
+static const u32 Td0 [256] =
 {
   0x51f4a750U, 0x7e416553U, 0x1a17a4c3U, 0x3a275e96U,
   0x3bab6bcbU, 0x1f9d45f1U, 0xacfa58abU, 0x4be30393U,
@@ -556,7 +556,7 @@ static const u32 Td0[256] =
   0x7bcb8461U, 0xd532b670U, 0x486c5c74U, 0xd0b85742U,
 };
 
-static const u32 Td1[256] =
+static const u32 Td1 [256] =
 {
   0x5051f4a7U, 0x537e4165U, 0xc31a17a4U, 0x963a275eU,
   0xcb3bab6bU, 0xf11f9d45U, 0xabacfa58U, 0x934be303U,
@@ -624,7 +624,7 @@ static const u32 Td1[256] =
   0x617bcb84U, 0x70d532b6U, 0x74486c5cU, 0x42d0b857U,
 };
 
-static const u32 Td2[256] =
+static const u32 Td2 [256] =
 {
   0xa75051f4U, 0x65537e41U, 0xa4c31a17U, 0x5e963a27U,
   0x6bcb3babU, 0x45f11f9dU, 0x58abacfaU, 0x03934be3U,
@@ -692,7 +692,7 @@ static const u32 Td2[256] =
   0x84617bcbU, 0xb670d532U, 0x5c74486cU, 0x5742d0b8U,
 };
 
-static const u32 Td3[256] =
+static const u32 Td3 [256] =
 {
   0xf4a75051U, 0x4165537eU, 0x17a4c31aU, 0x275e963aU,
   0xab6bcb3bU, 0x9d45f11fU, 0xfa58abacU, 0xe303934bU,
@@ -760,7 +760,7 @@ static const u32 Td3[256] =
   0xcb84617bU, 0x32b670d5U, 0x6c5c7448U, 0xb85742d0U,
 };
 
-static const u32 Td4[256] =
+static const u32 Td4 [256] =
 {
   0x52525252U, 0x09090909U, 0x6a6a6a6aU, 0xd5d5d5d5U,
   0x30303030U, 0x36363636U, 0xa5a5a5a5U, 0x38383838U,
@@ -828,7 +828,7 @@ static const u32 Td4[256] =
   0x55555555U, 0x21212121U, 0x0c0c0c0cU, 0x7d7d7d7dU,
 };
 
-static const u32 rcon[] =
+static const u32 rcon [] =
 {
   0x01000000, 0x02000000, 0x04000000, 0x08000000,
   0x10000000, 0x20000000, 0x40000000, 0x80000000,
@@ -851,84 +851,84 @@ static const u32 rcon[] =
  *
  * @return the number of rounds for the given cipher key size.
  */
-int BuiltInEncryption::rijndaelSetupEncrypt (u32 * rk, const u8 * key, int keybits)
+int BuiltInEncryption::rijndaelSetupEncrypt (u32* rk, const u8* key, int keybits)
 {
 	int i = 0;
 	u32 temp;
 
-	rk[0] = GETU32 (key);
-	rk[1] = GETU32 (key + 4);
-	rk[2] = GETU32 (key + 8);
-	rk[3] = GETU32 (key + 12);
+	rk [0] = GETU32 (key);
+	rk [1] = GETU32 (key + 4);
+	rk [2] = GETU32 (key + 8);
+	rk [3] = GETU32 (key + 12);
 	if (keybits == 128)
 	{
 		for (;;)
 		{
-			temp = rk[3];
-			rk[4] = rk[0] ^
-				(Te4[(temp >> 16) & 0xff] & 0xff000000) ^
-				(Te4[(temp >> 8) & 0xff] & 0x00ff0000) ^
-				(Te4[(temp) & 0xff] & 0x0000ff00) ^
-				(Te4[(temp >> 24)] & 0x000000ff) ^
-				rcon[i];
-			rk[5] = rk[1] ^ rk[4];
-			rk[6] = rk[2] ^ rk[5];
-			rk[7] = rk[3] ^ rk[6];
+			temp = rk [3];
+			rk [4] = rk [0] ^
+				(Te4 [(temp >> 16) & 0xff] & 0xff000000) ^
+				(Te4 [(temp >> 8) & 0xff] & 0x00ff0000) ^
+				(Te4 [(temp) & 0xff] & 0x0000ff00) ^
+				(Te4 [(temp >> 24)] & 0x000000ff) ^
+				rcon [i];
+			rk [5] = rk [1] ^ rk [4];
+			rk [6] = rk [2] ^ rk [5];
+			rk [7] = rk [3] ^ rk [6];
 			if (++i == 10)
 				return 10;
 			rk += 4;
 		}
 	}
-	rk[4] = GETU32 (key + 16);
-	rk[5] = GETU32 (key + 20);
+	rk [4] = GETU32 (key + 16);
+	rk [5] = GETU32 (key + 20);
 	if (keybits == 192)
 	{
 		for (;;)
 		{
-			temp = rk[5];
-			rk[6] = rk[0] ^
-				(Te4[(temp >> 16) & 0xff] & 0xff000000) ^
-				(Te4[(temp >> 8) & 0xff] & 0x00ff0000) ^
-				(Te4[(temp) & 0xff] & 0x0000ff00) ^
-				(Te4[(temp >> 24)] & 0x000000ff) ^
-				rcon[i];
-			rk[7] = rk[1] ^ rk[6];
-			rk[8] = rk[2] ^ rk[7];
-			rk[9] = rk[3] ^ rk[8];
+			temp = rk [5];
+			rk [6] = rk [0] ^
+				(Te4 [(temp >> 16) & 0xff] & 0xff000000) ^
+				(Te4 [(temp >> 8) & 0xff] & 0x00ff0000) ^
+				(Te4 [(temp) & 0xff] & 0x0000ff00) ^
+				(Te4 [(temp >> 24)] & 0x000000ff) ^
+				rcon [i];
+			rk [7] = rk [1] ^ rk [6];
+			rk [8] = rk [2] ^ rk [7];
+			rk [9] = rk [3] ^ rk [8];
 			if (++i == 8)
 				return 12;
-			rk[10] = rk[4] ^ rk[9];
-			rk[11] = rk[5] ^ rk[10];
+			rk [10] = rk [4] ^ rk [9];
+			rk [11] = rk [5] ^ rk [10];
 			rk += 6;
 		}
 	}
-	rk[6] = GETU32 (key + 24);
-	rk[7] = GETU32 (key + 28);
+	rk [6] = GETU32 (key + 24);
+	rk [7] = GETU32 (key + 28);
 	if (keybits == 256)
 	{
 		for (;;)
 		{
-			temp = rk[7];
-			rk[8] = rk[0] ^
-				(Te4[(temp >> 16) & 0xff] & 0xff000000) ^
-				(Te4[(temp >> 8) & 0xff] & 0x00ff0000) ^
-				(Te4[(temp) & 0xff] & 0x0000ff00) ^
-				(Te4[(temp >> 24)] & 0x000000ff) ^
-				rcon[i];
-			rk[9] = rk[1] ^ rk[8];
-			rk[10] = rk[2] ^ rk[9];
-			rk[11] = rk[3] ^ rk[10];
+			temp = rk [7];
+			rk [8] = rk [0] ^
+				(Te4 [(temp >> 16) & 0xff] & 0xff000000) ^
+				(Te4 [(temp >> 8) & 0xff] & 0x00ff0000) ^
+				(Te4 [(temp) & 0xff] & 0x0000ff00) ^
+				(Te4 [(temp >> 24)] & 0x000000ff) ^
+				rcon [i];
+			rk [9] = rk [1] ^ rk [8];
+			rk [10] = rk [2] ^ rk [9];
+			rk [11] = rk [3] ^ rk [10];
 			if (++i == 7)
 				return 14;
-			temp = rk[11];
-			rk[12] = rk[4] ^
-				(Te4[(temp >> 24)] & 0xff000000) ^
-				(Te4[(temp >> 16) & 0xff] & 0x00ff0000) ^
-				(Te4[(temp >> 8) & 0xff] & 0x0000ff00) ^
-				(Te4[(temp) & 0xff] & 0x000000ff);
-			rk[13] = rk[5] ^ rk[12];
-			rk[14] = rk[6] ^ rk[13];
-			rk[15] = rk[7] ^ rk[14];
+			temp = rk [11];
+			rk [12] = rk [4] ^
+				(Te4 [(temp >> 24)] & 0xff000000) ^
+				(Te4 [(temp >> 16) & 0xff] & 0x00ff0000) ^
+				(Te4 [(temp >> 8) & 0xff] & 0x0000ff00) ^
+				(Te4 [(temp) & 0xff] & 0x000000ff);
+			rk [13] = rk [5] ^ rk [12];
+			rk [14] = rk [6] ^ rk [13];
+			rk [15] = rk [7] ^ rk [14];
 			rk += 8;
 		}
 	}
@@ -940,7 +940,7 @@ int BuiltInEncryption::rijndaelSetupEncrypt (u32 * rk, const u8 * key, int keybi
  *
  * @return the number of rounds for the given cipher key size.
  */
-int BuiltInEncryption::rijndaelSetupDecrypt (u32 * rk, const u8 * key, int keybits)
+int BuiltInEncryption::rijndaelSetupDecrypt (u32* rk, const u8* key, int keybits)
 {
 	int nrounds, i, j;
 	u32 temp;
@@ -950,40 +950,40 @@ int BuiltInEncryption::rijndaelSetupDecrypt (u32 * rk, const u8 * key, int keybi
 	/* invert the order of the round keys: */
 	for (i = 0, j = 4 * nrounds; i < j; i += 4, j -= 4)
 	{
-		temp = rk[i]; rk[i] = rk[j]; rk[j] = temp;
-		temp = rk[i + 1]; rk[i + 1] = rk[j + 1]; rk[j + 1] = temp;
-		temp = rk[i + 2]; rk[i + 2] = rk[j + 2]; rk[j + 2] = temp;
-		temp = rk[i + 3]; rk[i + 3] = rk[j + 3]; rk[j + 3] = temp;
+		temp = rk [i]; rk [i] = rk [j]; rk [j] = temp;
+		temp = rk [i + 1]; rk [i + 1] = rk [j + 1]; rk [j + 1] = temp;
+		temp = rk [i + 2]; rk [i + 2] = rk [j + 2]; rk [j + 2] = temp;
+		temp = rk [i + 3]; rk [i + 3] = rk [j + 3]; rk [j + 3] = temp;
 	}
 	/* apply the inverse MixColumn transform to all round keys but the first and the last: */
 	for (i = 1; i < nrounds; i++)
 	{
 		rk += 4;
-		rk[0] =
-			Td0[Te4[(rk[0] >> 24)] & 0xff] ^
-			Td1[Te4[(rk[0] >> 16) & 0xff] & 0xff] ^
-			Td2[Te4[(rk[0] >> 8) & 0xff] & 0xff] ^
-			Td3[Te4[(rk[0]) & 0xff] & 0xff];
-		rk[1] =
-			Td0[Te4[(rk[1] >> 24)] & 0xff] ^
-			Td1[Te4[(rk[1] >> 16) & 0xff] & 0xff] ^
-			Td2[Te4[(rk[1] >> 8) & 0xff] & 0xff] ^
-			Td3[Te4[(rk[1]) & 0xff] & 0xff];
-		rk[2] =
-			Td0[Te4[(rk[2] >> 24)] & 0xff] ^
-			Td1[Te4[(rk[2] >> 16) & 0xff] & 0xff] ^
-			Td2[Te4[(rk[2] >> 8) & 0xff] & 0xff] ^
-			Td3[Te4[(rk[2]) & 0xff] & 0xff];
-		rk[3] =
-			Td0[Te4[(rk[3] >> 24)] & 0xff] ^
-			Td1[Te4[(rk[3] >> 16) & 0xff] & 0xff] ^
-			Td2[Te4[(rk[3] >> 8) & 0xff] & 0xff] ^
-			Td3[Te4[(rk[3]) & 0xff] & 0xff];
+		rk [0] =
+			Td0 [Te4 [(rk [0] >> 24)] & 0xff] ^
+			Td1 [Te4 [(rk [0] >> 16) & 0xff] & 0xff] ^
+			Td2 [Te4 [(rk [0] >> 8) & 0xff] & 0xff] ^
+			Td3 [Te4 [(rk [0]) & 0xff] & 0xff];
+		rk [1] =
+			Td0 [Te4 [(rk [1] >> 24)] & 0xff] ^
+			Td1 [Te4 [(rk [1] >> 16) & 0xff] & 0xff] ^
+			Td2 [Te4 [(rk [1] >> 8) & 0xff] & 0xff] ^
+			Td3 [Te4 [(rk [1]) & 0xff] & 0xff];
+		rk [2] =
+			Td0 [Te4 [(rk [2] >> 24)] & 0xff] ^
+			Td1 [Te4 [(rk [2] >> 16) & 0xff] & 0xff] ^
+			Td2 [Te4 [(rk [2] >> 8) & 0xff] & 0xff] ^
+			Td3 [Te4 [(rk [2]) & 0xff] & 0xff];
+		rk [3] =
+			Td0 [Te4 [(rk [3] >> 24)] & 0xff] ^
+			Td1 [Te4 [(rk [3] >> 16) & 0xff] & 0xff] ^
+			Td2 [Te4 [(rk [3] >> 8) & 0xff] & 0xff] ^
+			Td3 [Te4 [(rk [3]) & 0xff] & 0xff];
 	}
 	return nrounds;
 }
 
-void BuiltInEncryption::rijndaelEncrypt (const u32 * rk, int nrounds, const u8 plaintext[AES_BLOCK_SIZE], u8 ciphertext[AES_BLOCK_SIZE])
+void BuiltInEncryption::rijndaelEncrypt (const u32* rk, int nrounds, const u8 plaintext [AES_BLOCK_SIZE], u8 ciphertext [AES_BLOCK_SIZE])
 {
 	u32 s0, s1, s2, s3, t0, t1, t2, t3;
 #ifndef FULL_UNROLL
@@ -993,80 +993,80 @@ void BuiltInEncryption::rijndaelEncrypt (const u32 * rk, int nrounds, const u8 p
 	 * map byte array block to cipher state
 	 * and add initial round key:
 	*/
-	s0 = GETU32 (plaintext) ^ rk[0];
-	s1 = GETU32 (plaintext + 4) ^ rk[1];
-	s2 = GETU32 (plaintext + 8) ^ rk[2];
-	s3 = GETU32 (plaintext + 12) ^ rk[3];
+	s0 = GETU32 (plaintext) ^ rk [0];
+	s1 = GETU32 (plaintext + 4) ^ rk [1];
+	s2 = GETU32 (plaintext + 8) ^ rk [2];
+	s3 = GETU32 (plaintext + 12) ^ rk [3];
 #ifdef FULL_UNROLL
 	/* round 1: */
-	t0 = Te0[s0 >> 24] ^ Te1[(s1 >> 16) & 0xff] ^ Te2[(s2 >> 8) & 0xff] ^ Te3[s3 & 0xff] ^ rk[4];
-	t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >> 8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[5];
-	t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >> 8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[6];
-	t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >> 8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[7];
+	t0 = Te0 [s0 >> 24] ^ Te1 [(s1 >> 16) & 0xff] ^ Te2 [(s2 >> 8) & 0xff] ^ Te3 [s3 & 0xff] ^ rk [4];
+	t1 = Te0 [s1 >> 24] ^ Te1 [(s2 >> 16) & 0xff] ^ Te2 [(s3 >> 8) & 0xff] ^ Te3 [s0 & 0xff] ^ rk [5];
+	t2 = Te0 [s2 >> 24] ^ Te1 [(s3 >> 16) & 0xff] ^ Te2 [(s0 >> 8) & 0xff] ^ Te3 [s1 & 0xff] ^ rk [6];
+	t3 = Te0 [s3 >> 24] ^ Te1 [(s0 >> 16) & 0xff] ^ Te2 [(s1 >> 8) & 0xff] ^ Te3 [s2 & 0xff] ^ rk [7];
 	/* round 2: */
-	s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >> 8) & 0xff] ^ Te3[t3 & 0xff] ^ rk[8];
-	s1 = Te0[t1 >> 24] ^ Te1[(t2 >> 16) & 0xff] ^ Te2[(t3 >> 8) & 0xff] ^ Te3[t0 & 0xff] ^ rk[9];
-	s2 = Te0[t2 >> 24] ^ Te1[(t3 >> 16) & 0xff] ^ Te2[(t0 >> 8) & 0xff] ^ Te3[t1 & 0xff] ^ rk[10];
-	s3 = Te0[t3 >> 24] ^ Te1[(t0 >> 16) & 0xff] ^ Te2[(t1 >> 8) & 0xff] ^ Te3[t2 & 0xff] ^ rk[11];
+	s0 = Te0 [t0 >> 24] ^ Te1 [(t1 >> 16) & 0xff] ^ Te2 [(t2 >> 8) & 0xff] ^ Te3 [t3 & 0xff] ^ rk [8];
+	s1 = Te0 [t1 >> 24] ^ Te1 [(t2 >> 16) & 0xff] ^ Te2 [(t3 >> 8) & 0xff] ^ Te3 [t0 & 0xff] ^ rk [9];
+	s2 = Te0 [t2 >> 24] ^ Te1 [(t3 >> 16) & 0xff] ^ Te2 [(t0 >> 8) & 0xff] ^ Te3 [t1 & 0xff] ^ rk [10];
+	s3 = Te0 [t3 >> 24] ^ Te1 [(t0 >> 16) & 0xff] ^ Te2 [(t1 >> 8) & 0xff] ^ Te3 [t2 & 0xff] ^ rk [11];
 	/* round 3: */
-	t0 = Te0[s0 >> 24] ^ Te1[(s1 >> 16) & 0xff] ^ Te2[(s2 >> 8) & 0xff] ^ Te3[s3 & 0xff] ^ rk[12];
-	t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >> 8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[13];
-	t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >> 8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[14];
-	t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >> 8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[15];
+	t0 = Te0 [s0 >> 24] ^ Te1 [(s1 >> 16) & 0xff] ^ Te2 [(s2 >> 8) & 0xff] ^ Te3 [s3 & 0xff] ^ rk [12];
+	t1 = Te0 [s1 >> 24] ^ Te1 [(s2 >> 16) & 0xff] ^ Te2 [(s3 >> 8) & 0xff] ^ Te3 [s0 & 0xff] ^ rk [13];
+	t2 = Te0 [s2 >> 24] ^ Te1 [(s3 >> 16) & 0xff] ^ Te2 [(s0 >> 8) & 0xff] ^ Te3 [s1 & 0xff] ^ rk [14];
+	t3 = Te0 [s3 >> 24] ^ Te1 [(s0 >> 16) & 0xff] ^ Te2 [(s1 >> 8) & 0xff] ^ Te3 [s2 & 0xff] ^ rk [15];
 	/* round 4: */
-	s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >> 8) & 0xff] ^ Te3[t3 & 0xff] ^ rk[16];
-	s1 = Te0[t1 >> 24] ^ Te1[(t2 >> 16) & 0xff] ^ Te2[(t3 >> 8) & 0xff] ^ Te3[t0 & 0xff] ^ rk[17];
-	s2 = Te0[t2 >> 24] ^ Te1[(t3 >> 16) & 0xff] ^ Te2[(t0 >> 8) & 0xff] ^ Te3[t1 & 0xff] ^ rk[18];
-	s3 = Te0[t3 >> 24] ^ Te1[(t0 >> 16) & 0xff] ^ Te2[(t1 >> 8) & 0xff] ^ Te3[t2 & 0xff] ^ rk[19];
+	s0 = Te0 [t0 >> 24] ^ Te1 [(t1 >> 16) & 0xff] ^ Te2 [(t2 >> 8) & 0xff] ^ Te3 [t3 & 0xff] ^ rk [16];
+	s1 = Te0 [t1 >> 24] ^ Te1 [(t2 >> 16) & 0xff] ^ Te2 [(t3 >> 8) & 0xff] ^ Te3 [t0 & 0xff] ^ rk [17];
+	s2 = Te0 [t2 >> 24] ^ Te1 [(t3 >> 16) & 0xff] ^ Te2 [(t0 >> 8) & 0xff] ^ Te3 [t1 & 0xff] ^ rk [18];
+	s3 = Te0 [t3 >> 24] ^ Te1 [(t0 >> 16) & 0xff] ^ Te2 [(t1 >> 8) & 0xff] ^ Te3 [t2 & 0xff] ^ rk [19];
 	/* round 5: */
-	t0 = Te0[s0 >> 24] ^ Te1[(s1 >> 16) & 0xff] ^ Te2[(s2 >> 8) & 0xff] ^ Te3[s3 & 0xff] ^ rk[20];
-	t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >> 8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[21];
-	t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >> 8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[22];
-	t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >> 8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[23];
+	t0 = Te0 [s0 >> 24] ^ Te1 [(s1 >> 16) & 0xff] ^ Te2 [(s2 >> 8) & 0xff] ^ Te3 [s3 & 0xff] ^ rk [20];
+	t1 = Te0 [s1 >> 24] ^ Te1 [(s2 >> 16) & 0xff] ^ Te2 [(s3 >> 8) & 0xff] ^ Te3 [s0 & 0xff] ^ rk [21];
+	t2 = Te0 [s2 >> 24] ^ Te1 [(s3 >> 16) & 0xff] ^ Te2 [(s0 >> 8) & 0xff] ^ Te3 [s1 & 0xff] ^ rk [22];
+	t3 = Te0 [s3 >> 24] ^ Te1 [(s0 >> 16) & 0xff] ^ Te2 [(s1 >> 8) & 0xff] ^ Te3 [s2 & 0xff] ^ rk [23];
 	/* round 6: */
-	s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >> 8) & 0xff] ^ Te3[t3 & 0xff] ^ rk[24];
-	s1 = Te0[t1 >> 24] ^ Te1[(t2 >> 16) & 0xff] ^ Te2[(t3 >> 8) & 0xff] ^ Te3[t0 & 0xff] ^ rk[25];
-	s2 = Te0[t2 >> 24] ^ Te1[(t3 >> 16) & 0xff] ^ Te2[(t0 >> 8) & 0xff] ^ Te3[t1 & 0xff] ^ rk[26];
-	s3 = Te0[t3 >> 24] ^ Te1[(t0 >> 16) & 0xff] ^ Te2[(t1 >> 8) & 0xff] ^ Te3[t2 & 0xff] ^ rk[27];
+	s0 = Te0 [t0 >> 24] ^ Te1 [(t1 >> 16) & 0xff] ^ Te2 [(t2 >> 8) & 0xff] ^ Te3 [t3 & 0xff] ^ rk [24];
+	s1 = Te0 [t1 >> 24] ^ Te1 [(t2 >> 16) & 0xff] ^ Te2 [(t3 >> 8) & 0xff] ^ Te3 [t0 & 0xff] ^ rk [25];
+	s2 = Te0 [t2 >> 24] ^ Te1 [(t3 >> 16) & 0xff] ^ Te2 [(t0 >> 8) & 0xff] ^ Te3 [t1 & 0xff] ^ rk [26];
+	s3 = Te0 [t3 >> 24] ^ Te1 [(t0 >> 16) & 0xff] ^ Te2 [(t1 >> 8) & 0xff] ^ Te3 [t2 & 0xff] ^ rk [27];
 	/* round 7: */
-	t0 = Te0[s0 >> 24] ^ Te1[(s1 >> 16) & 0xff] ^ Te2[(s2 >> 8) & 0xff] ^ Te3[s3 & 0xff] ^ rk[28];
-	t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >> 8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[29];
-	t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >> 8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[30];
-	t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >> 8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[31];
+	t0 = Te0 [s0 >> 24] ^ Te1 [(s1 >> 16) & 0xff] ^ Te2 [(s2 >> 8) & 0xff] ^ Te3 [s3 & 0xff] ^ rk [28];
+	t1 = Te0 [s1 >> 24] ^ Te1 [(s2 >> 16) & 0xff] ^ Te2 [(s3 >> 8) & 0xff] ^ Te3 [s0 & 0xff] ^ rk [29];
+	t2 = Te0 [s2 >> 24] ^ Te1 [(s3 >> 16) & 0xff] ^ Te2 [(s0 >> 8) & 0xff] ^ Te3 [s1 & 0xff] ^ rk [30];
+	t3 = Te0 [s3 >> 24] ^ Te1 [(s0 >> 16) & 0xff] ^ Te2 [(s1 >> 8) & 0xff] ^ Te3 [s2 & 0xff] ^ rk [31];
 	/* round 8: */
-	s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >> 8) & 0xff] ^ Te3[t3 & 0xff] ^ rk[32];
-	s1 = Te0[t1 >> 24] ^ Te1[(t2 >> 16) & 0xff] ^ Te2[(t3 >> 8) & 0xff] ^ Te3[t0 & 0xff] ^ rk[33];
-	s2 = Te0[t2 >> 24] ^ Te1[(t3 >> 16) & 0xff] ^ Te2[(t0 >> 8) & 0xff] ^ Te3[t1 & 0xff] ^ rk[34];
-	s3 = Te0[t3 >> 24] ^ Te1[(t0 >> 16) & 0xff] ^ Te2[(t1 >> 8) & 0xff] ^ Te3[t2 & 0xff] ^ rk[35];
+	s0 = Te0 [t0 >> 24] ^ Te1 [(t1 >> 16) & 0xff] ^ Te2 [(t2 >> 8) & 0xff] ^ Te3 [t3 & 0xff] ^ rk [32];
+	s1 = Te0 [t1 >> 24] ^ Te1 [(t2 >> 16) & 0xff] ^ Te2 [(t3 >> 8) & 0xff] ^ Te3 [t0 & 0xff] ^ rk [33];
+	s2 = Te0 [t2 >> 24] ^ Te1 [(t3 >> 16) & 0xff] ^ Te2 [(t0 >> 8) & 0xff] ^ Te3 [t1 & 0xff] ^ rk [34];
+	s3 = Te0 [t3 >> 24] ^ Te1 [(t0 >> 16) & 0xff] ^ Te2 [(t1 >> 8) & 0xff] ^ Te3 [t2 & 0xff] ^ rk [35];
 	/* round 9: */
-	t0 = Te0[s0 >> 24] ^ Te1[(s1 >> 16) & 0xff] ^ Te2[(s2 >> 8) & 0xff] ^ Te3[s3 & 0xff] ^ rk[36];
-	t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >> 8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[37];
-	t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >> 8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[38];
-	t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >> 8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[39];
+	t0 = Te0 [s0 >> 24] ^ Te1 [(s1 >> 16) & 0xff] ^ Te2 [(s2 >> 8) & 0xff] ^ Te3 [s3 & 0xff] ^ rk [36];
+	t1 = Te0 [s1 >> 24] ^ Te1 [(s2 >> 16) & 0xff] ^ Te2 [(s3 >> 8) & 0xff] ^ Te3 [s0 & 0xff] ^ rk [37];
+	t2 = Te0 [s2 >> 24] ^ Te1 [(s3 >> 16) & 0xff] ^ Te2 [(s0 >> 8) & 0xff] ^ Te3 [s1 & 0xff] ^ rk [38];
+	t3 = Te0 [s3 >> 24] ^ Te1 [(s0 >> 16) & 0xff] ^ Te2 [(s1 >> 8) & 0xff] ^ Te3 [s2 & 0xff] ^ rk [39];
 	if (nrounds > 10)
 	{
 		/* round 10: */
-		s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >> 8) & 0xff] ^ Te3[t3 & 0xff] ^ rk[40];
-		s1 = Te0[t1 >> 24] ^ Te1[(t2 >> 16) & 0xff] ^ Te2[(t3 >> 8) & 0xff] ^ Te3[t0 & 0xff] ^ rk[41];
-		s2 = Te0[t2 >> 24] ^ Te1[(t3 >> 16) & 0xff] ^ Te2[(t0 >> 8) & 0xff] ^ Te3[t1 & 0xff] ^ rk[42];
-		s3 = Te0[t3 >> 24] ^ Te1[(t0 >> 16) & 0xff] ^ Te2[(t1 >> 8) & 0xff] ^ Te3[t2 & 0xff] ^ rk[43];
+		s0 = Te0 [t0 >> 24] ^ Te1 [(t1 >> 16) & 0xff] ^ Te2 [(t2 >> 8) & 0xff] ^ Te3 [t3 & 0xff] ^ rk [40];
+		s1 = Te0 [t1 >> 24] ^ Te1 [(t2 >> 16) & 0xff] ^ Te2 [(t3 >> 8) & 0xff] ^ Te3 [t0 & 0xff] ^ rk [41];
+		s2 = Te0 [t2 >> 24] ^ Te1 [(t3 >> 16) & 0xff] ^ Te2 [(t0 >> 8) & 0xff] ^ Te3 [t1 & 0xff] ^ rk [42];
+		s3 = Te0 [t3 >> 24] ^ Te1 [(t0 >> 16) & 0xff] ^ Te2 [(t1 >> 8) & 0xff] ^ Te3 [t2 & 0xff] ^ rk [43];
 		/* round 11: */
-		t0 = Te0[s0 >> 24] ^ Te1[(s1 >> 16) & 0xff] ^ Te2[(s2 >> 8) & 0xff] ^ Te3[s3 & 0xff] ^ rk[44];
-		t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >> 8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[45];
-		t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >> 8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[46];
-		t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >> 8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[47];
+		t0 = Te0 [s0 >> 24] ^ Te1 [(s1 >> 16) & 0xff] ^ Te2 [(s2 >> 8) & 0xff] ^ Te3 [s3 & 0xff] ^ rk [44];
+		t1 = Te0 [s1 >> 24] ^ Te1 [(s2 >> 16) & 0xff] ^ Te2 [(s3 >> 8) & 0xff] ^ Te3 [s0 & 0xff] ^ rk [45];
+		t2 = Te0 [s2 >> 24] ^ Te1 [(s3 >> 16) & 0xff] ^ Te2 [(s0 >> 8) & 0xff] ^ Te3 [s1 & 0xff] ^ rk [46];
+		t3 = Te0 [s3 >> 24] ^ Te1 [(s0 >> 16) & 0xff] ^ Te2 [(s1 >> 8) & 0xff] ^ Te3 [s2 & 0xff] ^ rk [47];
 		if (nrounds > 12)
 		{
 			/* round 12: */
-			s0 = Te0[t0 >> 24] ^ Te1[(t1 >> 16) & 0xff] ^ Te2[(t2 >> 8) & 0xff] ^ Te3[t3 & 0xff] ^ rk[48];
-			s1 = Te0[t1 >> 24] ^ Te1[(t2 >> 16) & 0xff] ^ Te2[(t3 >> 8) & 0xff] ^ Te3[t0 & 0xff] ^ rk[49];
-			s2 = Te0[t2 >> 24] ^ Te1[(t3 >> 16) & 0xff] ^ Te2[(t0 >> 8) & 0xff] ^ Te3[t1 & 0xff] ^ rk[50];
-			s3 = Te0[t3 >> 24] ^ Te1[(t0 >> 16) & 0xff] ^ Te2[(t1 >> 8) & 0xff] ^ Te3[t2 & 0xff] ^ rk[51];
+			s0 = Te0 [t0 >> 24] ^ Te1 [(t1 >> 16) & 0xff] ^ Te2 [(t2 >> 8) & 0xff] ^ Te3 [t3 & 0xff] ^ rk [48];
+			s1 = Te0 [t1 >> 24] ^ Te1 [(t2 >> 16) & 0xff] ^ Te2 [(t3 >> 8) & 0xff] ^ Te3 [t0 & 0xff] ^ rk [49];
+			s2 = Te0 [t2 >> 24] ^ Te1 [(t3 >> 16) & 0xff] ^ Te2 [(t0 >> 8) & 0xff] ^ Te3 [t1 & 0xff] ^ rk [50];
+			s3 = Te0 [t3 >> 24] ^ Te1 [(t0 >> 16) & 0xff] ^ Te2 [(t1 >> 8) & 0xff] ^ Te3 [t2 & 0xff] ^ rk [51];
 			/* round 13: */
-			t0 = Te0[s0 >> 24] ^ Te1[(s1 >> 16) & 0xff] ^ Te2[(s2 >> 8) & 0xff] ^ Te3[s3 & 0xff] ^ rk[52];
-			t1 = Te0[s1 >> 24] ^ Te1[(s2 >> 16) & 0xff] ^ Te2[(s3 >> 8) & 0xff] ^ Te3[s0 & 0xff] ^ rk[53];
-			t2 = Te0[s2 >> 24] ^ Te1[(s3 >> 16) & 0xff] ^ Te2[(s0 >> 8) & 0xff] ^ Te3[s1 & 0xff] ^ rk[54];
-			t3 = Te0[s3 >> 24] ^ Te1[(s0 >> 16) & 0xff] ^ Te2[(s1 >> 8) & 0xff] ^ Te3[s2 & 0xff] ^ rk[55];
+			t0 = Te0 [s0 >> 24] ^ Te1 [(s1 >> 16) & 0xff] ^ Te2 [(s2 >> 8) & 0xff] ^ Te3 [s3 & 0xff] ^ rk [52];
+			t1 = Te0 [s1 >> 24] ^ Te1 [(s2 >> 16) & 0xff] ^ Te2 [(s3 >> 8) & 0xff] ^ Te3 [s0 & 0xff] ^ rk [53];
+			t2 = Te0 [s2 >> 24] ^ Te1 [(s3 >> 16) & 0xff] ^ Te2 [(s0 >> 8) & 0xff] ^ Te3 [s1 & 0xff] ^ rk [54];
+			t3 = Te0 [s3 >> 24] ^ Te1 [(s0 >> 16) & 0xff] ^ Te2 [(s1 >> 8) & 0xff] ^ Te3 [s2 & 0xff] ^ rk [55];
 		}
 	}
 	rk += nrounds << 2;
@@ -1078,56 +1078,56 @@ void BuiltInEncryption::rijndaelEncrypt (const u32 * rk, int nrounds, const u8 p
 	for (;;)
 	{
 		t0 =
-			Te0[(s0 >> 24)] ^
-			Te1[(s1 >> 16) & 0xff] ^
-			Te2[(s2 >> 8) & 0xff] ^
-			Te3[(s3) & 0xff] ^
-			rk[4];
+			Te0 [(s0 >> 24)] ^
+			Te1 [(s1 >> 16) & 0xff] ^
+			Te2 [(s2 >> 8) & 0xff] ^
+			Te3 [(s3) & 0xff] ^
+			rk [4];
 		t1 =
-			Te0[(s1 >> 24)] ^
-			Te1[(s2 >> 16) & 0xff] ^
-			Te2[(s3 >> 8) & 0xff] ^
-			Te3[(s0) & 0xff] ^
-			rk[5];
+			Te0 [(s1 >> 24)] ^
+			Te1 [(s2 >> 16) & 0xff] ^
+			Te2 [(s3 >> 8) & 0xff] ^
+			Te3 [(s0) & 0xff] ^
+			rk [5];
 		t2 =
-			Te0[(s2 >> 24)] ^
-			Te1[(s3 >> 16) & 0xff] ^
-			Te2[(s0 >> 8) & 0xff] ^
-			Te3[(s1) & 0xff] ^
-			rk[6];
+			Te0 [(s2 >> 24)] ^
+			Te1 [(s3 >> 16) & 0xff] ^
+			Te2 [(s0 >> 8) & 0xff] ^
+			Te3 [(s1) & 0xff] ^
+			rk [6];
 		t3 =
-			Te0[(s3 >> 24)] ^
-			Te1[(s0 >> 16) & 0xff] ^
-			Te2[(s1 >> 8) & 0xff] ^
-			Te3[(s2) & 0xff] ^
-			rk[7];
+			Te0 [(s3 >> 24)] ^
+			Te1 [(s0 >> 16) & 0xff] ^
+			Te2 [(s1 >> 8) & 0xff] ^
+			Te3 [(s2) & 0xff] ^
+			rk [7];
 		rk += 8;
 		if (--r == 0)
 			break;
 		s0 =
-			Te0[(t0 >> 24)] ^
-			Te1[(t1 >> 16) & 0xff] ^
-			Te2[(t2 >> 8) & 0xff] ^
-			Te3[(t3) & 0xff] ^
-			rk[0];
+			Te0 [(t0 >> 24)] ^
+			Te1 [(t1 >> 16) & 0xff] ^
+			Te2 [(t2 >> 8) & 0xff] ^
+			Te3 [(t3) & 0xff] ^
+			rk [0];
 		s1 =
-			Te0[(t1 >> 24)] ^
-			Te1[(t2 >> 16) & 0xff] ^
-			Te2[(t3 >> 8) & 0xff] ^
-			Te3[(t0) & 0xff] ^
-			rk[1];
+			Te0 [(t1 >> 24)] ^
+			Te1 [(t2 >> 16) & 0xff] ^
+			Te2 [(t3 >> 8) & 0xff] ^
+			Te3 [(t0) & 0xff] ^
+			rk [1];
 		s2 =
-			Te0[(t2 >> 24)] ^
-			Te1[(t3 >> 16) & 0xff] ^
-			Te2[(t0 >> 8) & 0xff] ^
-			Te3[(t1) & 0xff] ^
-			rk[2];
+			Te0 [(t2 >> 24)] ^
+			Te1 [(t3 >> 16) & 0xff] ^
+			Te2 [(t0 >> 8) & 0xff] ^
+			Te3 [(t1) & 0xff] ^
+			rk [2];
 		s3 =
-			Te0[(t3 >> 24)] ^
-			Te1[(t0 >> 16) & 0xff] ^
-			Te2[(t1 >> 8) & 0xff] ^
-			Te3[(t2) & 0xff] ^
-			rk[3];
+			Te0 [(t3 >> 24)] ^
+			Te1 [(t0 >> 16) & 0xff] ^
+			Te2 [(t1 >> 8) & 0xff] ^
+			Te3 [(t2) & 0xff] ^
+			rk [3];
 	}
 #endif /* ?FULL_UNROLL */
 	/*
@@ -1135,36 +1135,36 @@ void BuiltInEncryption::rijndaelEncrypt (const u32 * rk, int nrounds, const u8 p
 	* map cipher state to byte array block:
 	*/
 	s0 =
-		(Te4[(t0 >> 24)] & 0xff000000) ^
-		(Te4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
-		(Te4[(t2 >> 8) & 0xff] & 0x0000ff00) ^
-		(Te4[(t3) & 0xff] & 0x000000ff) ^
-		rk[0];
+		(Te4 [(t0 >> 24)] & 0xff000000) ^
+		(Te4 [(t1 >> 16) & 0xff] & 0x00ff0000) ^
+		(Te4 [(t2 >> 8) & 0xff] & 0x0000ff00) ^
+		(Te4 [(t3) & 0xff] & 0x000000ff) ^
+		rk [0];
 	PUTU32 (ciphertext, s0);
 	s1 =
-		(Te4[(t1 >> 24)] & 0xff000000) ^
-		(Te4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
-		(Te4[(t3 >> 8) & 0xff] & 0x0000ff00) ^
-		(Te4[(t0) & 0xff] & 0x000000ff) ^
-		rk[1];
+		(Te4 [(t1 >> 24)] & 0xff000000) ^
+		(Te4 [(t2 >> 16) & 0xff] & 0x00ff0000) ^
+		(Te4 [(t3 >> 8) & 0xff] & 0x0000ff00) ^
+		(Te4 [(t0) & 0xff] & 0x000000ff) ^
+		rk [1];
 	PUTU32 (ciphertext + 4, s1);
 	s2 =
-		(Te4[(t2 >> 24)] & 0xff000000) ^
-		(Te4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
-		(Te4[(t0 >> 8) & 0xff] & 0x0000ff00) ^
-		(Te4[(t1) & 0xff] & 0x000000ff) ^
-		rk[2];
+		(Te4 [(t2 >> 24)] & 0xff000000) ^
+		(Te4 [(t3 >> 16) & 0xff] & 0x00ff0000) ^
+		(Te4 [(t0 >> 8) & 0xff] & 0x0000ff00) ^
+		(Te4 [(t1) & 0xff] & 0x000000ff) ^
+		rk [2];
 	PUTU32 (ciphertext + 8, s2);
 	s3 =
-		(Te4[(t3 >> 24)] & 0xff000000) ^
-		(Te4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
-		(Te4[(t1 >> 8) & 0xff] & 0x0000ff00) ^
-		(Te4[(t2) & 0xff] & 0x000000ff) ^
-		rk[3];
+		(Te4 [(t3 >> 24)] & 0xff000000) ^
+		(Te4 [(t0 >> 16) & 0xff] & 0x00ff0000) ^
+		(Te4 [(t1 >> 8) & 0xff] & 0x0000ff00) ^
+		(Te4 [(t2) & 0xff] & 0x000000ff) ^
+		rk [3];
 	PUTU32 (ciphertext + 12, s3);
 }
 
-void BuiltInEncryption::rijndaelDecrypt (const u32 * rk, int nrounds, const u8 ciphertext[AES_BLOCK_SIZE], u8 plaintext[AES_BLOCK_SIZE])
+void BuiltInEncryption::rijndaelDecrypt (const u32* rk, int nrounds, const u8 ciphertext [AES_BLOCK_SIZE], u8 plaintext [AES_BLOCK_SIZE])
 {
 	u32 s0, s1, s2, s3, t0, t1, t2, t3;
 #ifndef FULL_UNROLL
@@ -1175,80 +1175,80 @@ void BuiltInEncryption::rijndaelDecrypt (const u32 * rk, int nrounds, const u8 c
 	* map byte array block to cipher state
 	* and add initial round key:
 	*/
-	s0 = GETU32 (ciphertext) ^ rk[0];
-	s1 = GETU32 (ciphertext + 4) ^ rk[1];
-	s2 = GETU32 (ciphertext + 8) ^ rk[2];
-	s3 = GETU32 (ciphertext + 12) ^ rk[3];
+	s0 = GETU32 (ciphertext) ^ rk [0];
+	s1 = GETU32 (ciphertext + 4) ^ rk [1];
+	s2 = GETU32 (ciphertext + 8) ^ rk [2];
+	s3 = GETU32 (ciphertext + 12) ^ rk [3];
 #ifdef FULL_UNROLL
 	/* round 1: */
-	t0 = Td0[s0 >> 24] ^ Td1[(s3 >> 16) & 0xff] ^ Td2[(s2 >> 8) & 0xff] ^ Td3[s1 & 0xff] ^ rk[4];
-	t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >> 8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[5];
-	t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >> 8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[6];
-	t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >> 8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[7];
+	t0 = Td0 [s0 >> 24] ^ Td1 [(s3 >> 16) & 0xff] ^ Td2 [(s2 >> 8) & 0xff] ^ Td3 [s1 & 0xff] ^ rk [4];
+	t1 = Td0 [s1 >> 24] ^ Td1 [(s0 >> 16) & 0xff] ^ Td2 [(s3 >> 8) & 0xff] ^ Td3 [s2 & 0xff] ^ rk [5];
+	t2 = Td0 [s2 >> 24] ^ Td1 [(s1 >> 16) & 0xff] ^ Td2 [(s0 >> 8) & 0xff] ^ Td3 [s3 & 0xff] ^ rk [6];
+	t3 = Td0 [s3 >> 24] ^ Td1 [(s2 >> 16) & 0xff] ^ Td2 [(s1 >> 8) & 0xff] ^ Td3 [s0 & 0xff] ^ rk [7];
 	/* round 2: */
-	s0 = Td0[t0 >> 24] ^ Td1[(t3 >> 16) & 0xff] ^ Td2[(t2 >> 8) & 0xff] ^ Td3[t1 & 0xff] ^ rk[8];
-	s1 = Td0[t1 >> 24] ^ Td1[(t0 >> 16) & 0xff] ^ Td2[(t3 >> 8) & 0xff] ^ Td3[t2 & 0xff] ^ rk[9];
-	s2 = Td0[t2 >> 24] ^ Td1[(t1 >> 16) & 0xff] ^ Td2[(t0 >> 8) & 0xff] ^ Td3[t3 & 0xff] ^ rk[10];
-	s3 = Td0[t3 >> 24] ^ Td1[(t2 >> 16) & 0xff] ^ Td2[(t1 >> 8) & 0xff] ^ Td3[t0 & 0xff] ^ rk[11];
+	s0 = Td0 [t0 >> 24] ^ Td1 [(t3 >> 16) & 0xff] ^ Td2 [(t2 >> 8) & 0xff] ^ Td3 [t1 & 0xff] ^ rk [8];
+	s1 = Td0 [t1 >> 24] ^ Td1 [(t0 >> 16) & 0xff] ^ Td2 [(t3 >> 8) & 0xff] ^ Td3 [t2 & 0xff] ^ rk [9];
+	s2 = Td0 [t2 >> 24] ^ Td1 [(t1 >> 16) & 0xff] ^ Td2 [(t0 >> 8) & 0xff] ^ Td3 [t3 & 0xff] ^ rk [10];
+	s3 = Td0 [t3 >> 24] ^ Td1 [(t2 >> 16) & 0xff] ^ Td2 [(t1 >> 8) & 0xff] ^ Td3 [t0 & 0xff] ^ rk [11];
 	/* round 3: */
-	t0 = Td0[s0 >> 24] ^ Td1[(s3 >> 16) & 0xff] ^ Td2[(s2 >> 8) & 0xff] ^ Td3[s1 & 0xff] ^ rk[12];
-	t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >> 8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[13];
-	t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >> 8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[14];
-	t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >> 8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[15];
+	t0 = Td0 [s0 >> 24] ^ Td1 [(s3 >> 16) & 0xff] ^ Td2 [(s2 >> 8) & 0xff] ^ Td3 [s1 & 0xff] ^ rk [12];
+	t1 = Td0 [s1 >> 24] ^ Td1 [(s0 >> 16) & 0xff] ^ Td2 [(s3 >> 8) & 0xff] ^ Td3 [s2 & 0xff] ^ rk [13];
+	t2 = Td0 [s2 >> 24] ^ Td1 [(s1 >> 16) & 0xff] ^ Td2 [(s0 >> 8) & 0xff] ^ Td3 [s3 & 0xff] ^ rk [14];
+	t3 = Td0 [s3 >> 24] ^ Td1 [(s2 >> 16) & 0xff] ^ Td2 [(s1 >> 8) & 0xff] ^ Td3 [s0 & 0xff] ^ rk [15];
 	/* round 4: */
-	s0 = Td0[t0 >> 24] ^ Td1[(t3 >> 16) & 0xff] ^ Td2[(t2 >> 8) & 0xff] ^ Td3[t1 & 0xff] ^ rk[16];
-	s1 = Td0[t1 >> 24] ^ Td1[(t0 >> 16) & 0xff] ^ Td2[(t3 >> 8) & 0xff] ^ Td3[t2 & 0xff] ^ rk[17];
-	s2 = Td0[t2 >> 24] ^ Td1[(t1 >> 16) & 0xff] ^ Td2[(t0 >> 8) & 0xff] ^ Td3[t3 & 0xff] ^ rk[18];
-	s3 = Td0[t3 >> 24] ^ Td1[(t2 >> 16) & 0xff] ^ Td2[(t1 >> 8) & 0xff] ^ Td3[t0 & 0xff] ^ rk[19];
+	s0 = Td0 [t0 >> 24] ^ Td1 [(t3 >> 16) & 0xff] ^ Td2 [(t2 >> 8) & 0xff] ^ Td3 [t1 & 0xff] ^ rk [16];
+	s1 = Td0 [t1 >> 24] ^ Td1 [(t0 >> 16) & 0xff] ^ Td2 [(t3 >> 8) & 0xff] ^ Td3 [t2 & 0xff] ^ rk [17];
+	s2 = Td0 [t2 >> 24] ^ Td1 [(t1 >> 16) & 0xff] ^ Td2 [(t0 >> 8) & 0xff] ^ Td3 [t3 & 0xff] ^ rk [18];
+	s3 = Td0 [t3 >> 24] ^ Td1 [(t2 >> 16) & 0xff] ^ Td2 [(t1 >> 8) & 0xff] ^ Td3 [t0 & 0xff] ^ rk [19];
 	/* round 5: */
-	t0 = Td0[s0 >> 24] ^ Td1[(s3 >> 16) & 0xff] ^ Td2[(s2 >> 8) & 0xff] ^ Td3[s1 & 0xff] ^ rk[20];
-	t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >> 8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[21];
-	t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >> 8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[22];
-	t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >> 8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[23];
+	t0 = Td0 [s0 >> 24] ^ Td1 [(s3 >> 16) & 0xff] ^ Td2 [(s2 >> 8) & 0xff] ^ Td3 [s1 & 0xff] ^ rk [20];
+	t1 = Td0 [s1 >> 24] ^ Td1 [(s0 >> 16) & 0xff] ^ Td2 [(s3 >> 8) & 0xff] ^ Td3 [s2 & 0xff] ^ rk [21];
+	t2 = Td0 [s2 >> 24] ^ Td1 [(s1 >> 16) & 0xff] ^ Td2 [(s0 >> 8) & 0xff] ^ Td3 [s3 & 0xff] ^ rk [22];
+	t3 = Td0 [s3 >> 24] ^ Td1 [(s2 >> 16) & 0xff] ^ Td2 [(s1 >> 8) & 0xff] ^ Td3 [s0 & 0xff] ^ rk [23];
 	/* round 6: */
-	s0 = Td0[t0 >> 24] ^ Td1[(t3 >> 16) & 0xff] ^ Td2[(t2 >> 8) & 0xff] ^ Td3[t1 & 0xff] ^ rk[24];
-	s1 = Td0[t1 >> 24] ^ Td1[(t0 >> 16) & 0xff] ^ Td2[(t3 >> 8) & 0xff] ^ Td3[t2 & 0xff] ^ rk[25];
-	s2 = Td0[t2 >> 24] ^ Td1[(t1 >> 16) & 0xff] ^ Td2[(t0 >> 8) & 0xff] ^ Td3[t3 & 0xff] ^ rk[26];
-	s3 = Td0[t3 >> 24] ^ Td1[(t2 >> 16) & 0xff] ^ Td2[(t1 >> 8) & 0xff] ^ Td3[t0 & 0xff] ^ rk[27];
+	s0 = Td0 [t0 >> 24] ^ Td1 [(t3 >> 16) & 0xff] ^ Td2 [(t2 >> 8) & 0xff] ^ Td3 [t1 & 0xff] ^ rk [24];
+	s1 = Td0 [t1 >> 24] ^ Td1 [(t0 >> 16) & 0xff] ^ Td2 [(t3 >> 8) & 0xff] ^ Td3 [t2 & 0xff] ^ rk [25];
+	s2 = Td0 [t2 >> 24] ^ Td1 [(t1 >> 16) & 0xff] ^ Td2 [(t0 >> 8) & 0xff] ^ Td3 [t3 & 0xff] ^ rk [26];
+	s3 = Td0 [t3 >> 24] ^ Td1 [(t2 >> 16) & 0xff] ^ Td2 [(t1 >> 8) & 0xff] ^ Td3 [t0 & 0xff] ^ rk [27];
 	/* round 7: */
-	t0 = Td0[s0 >> 24] ^ Td1[(s3 >> 16) & 0xff] ^ Td2[(s2 >> 8) & 0xff] ^ Td3[s1 & 0xff] ^ rk[28];
-	t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >> 8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[29];
-	t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >> 8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[30];
-	t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >> 8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[31];
+	t0 = Td0 [s0 >> 24] ^ Td1 [(s3 >> 16) & 0xff] ^ Td2 [(s2 >> 8) & 0xff] ^ Td3 [s1 & 0xff] ^ rk [28];
+	t1 = Td0 [s1 >> 24] ^ Td1 [(s0 >> 16) & 0xff] ^ Td2 [(s3 >> 8) & 0xff] ^ Td3 [s2 & 0xff] ^ rk [29];
+	t2 = Td0 [s2 >> 24] ^ Td1 [(s1 >> 16) & 0xff] ^ Td2 [(s0 >> 8) & 0xff] ^ Td3 [s3 & 0xff] ^ rk [30];
+	t3 = Td0 [s3 >> 24] ^ Td1 [(s2 >> 16) & 0xff] ^ Td2 [(s1 >> 8) & 0xff] ^ Td3 [s0 & 0xff] ^ rk [31];
 	/* round 8: */
-	s0 = Td0[t0 >> 24] ^ Td1[(t3 >> 16) & 0xff] ^ Td2[(t2 >> 8) & 0xff] ^ Td3[t1 & 0xff] ^ rk[32];
-	s1 = Td0[t1 >> 24] ^ Td1[(t0 >> 16) & 0xff] ^ Td2[(t3 >> 8) & 0xff] ^ Td3[t2 & 0xff] ^ rk[33];
-	s2 = Td0[t2 >> 24] ^ Td1[(t1 >> 16) & 0xff] ^ Td2[(t0 >> 8) & 0xff] ^ Td3[t3 & 0xff] ^ rk[34];
-	s3 = Td0[t3 >> 24] ^ Td1[(t2 >> 16) & 0xff] ^ Td2[(t1 >> 8) & 0xff] ^ Td3[t0 & 0xff] ^ rk[35];
+	s0 = Td0 [t0 >> 24] ^ Td1 [(t3 >> 16) & 0xff] ^ Td2 [(t2 >> 8) & 0xff] ^ Td3 [t1 & 0xff] ^ rk [32];
+	s1 = Td0 [t1 >> 24] ^ Td1 [(t0 >> 16) & 0xff] ^ Td2 [(t3 >> 8) & 0xff] ^ Td3 [t2 & 0xff] ^ rk [33];
+	s2 = Td0 [t2 >> 24] ^ Td1 [(t1 >> 16) & 0xff] ^ Td2 [(t0 >> 8) & 0xff] ^ Td3 [t3 & 0xff] ^ rk [34];
+	s3 = Td0 [t3 >> 24] ^ Td1 [(t2 >> 16) & 0xff] ^ Td2 [(t1 >> 8) & 0xff] ^ Td3 [t0 & 0xff] ^ rk [35];
 	/* round 9: */
-	t0 = Td0[s0 >> 24] ^ Td1[(s3 >> 16) & 0xff] ^ Td2[(s2 >> 8) & 0xff] ^ Td3[s1 & 0xff] ^ rk[36];
-	t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >> 8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[37];
-	t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >> 8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[38];
-	t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >> 8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[39];
+	t0 = Td0 [s0 >> 24] ^ Td1 [(s3 >> 16) & 0xff] ^ Td2 [(s2 >> 8) & 0xff] ^ Td3 [s1 & 0xff] ^ rk [36];
+	t1 = Td0 [s1 >> 24] ^ Td1 [(s0 >> 16) & 0xff] ^ Td2 [(s3 >> 8) & 0xff] ^ Td3 [s2 & 0xff] ^ rk [37];
+	t2 = Td0 [s2 >> 24] ^ Td1 [(s1 >> 16) & 0xff] ^ Td2 [(s0 >> 8) & 0xff] ^ Td3 [s3 & 0xff] ^ rk [38];
+	t3 = Td0 [s3 >> 24] ^ Td1 [(s2 >> 16) & 0xff] ^ Td2 [(s1 >> 8) & 0xff] ^ Td3 [s0 & 0xff] ^ rk [39];
 	if (nrounds > 10)
 	{
 		/* round 10: */
-		s0 = Td0[t0 >> 24] ^ Td1[(t3 >> 16) & 0xff] ^ Td2[(t2 >> 8) & 0xff] ^ Td3[t1 & 0xff] ^ rk[40];
-		s1 = Td0[t1 >> 24] ^ Td1[(t0 >> 16) & 0xff] ^ Td2[(t3 >> 8) & 0xff] ^ Td3[t2 & 0xff] ^ rk[41];
-		s2 = Td0[t2 >> 24] ^ Td1[(t1 >> 16) & 0xff] ^ Td2[(t0 >> 8) & 0xff] ^ Td3[t3 & 0xff] ^ rk[42];
-		s3 = Td0[t3 >> 24] ^ Td1[(t2 >> 16) & 0xff] ^ Td2[(t1 >> 8) & 0xff] ^ Td3[t0 & 0xff] ^ rk[43];
+		s0 = Td0 [t0 >> 24] ^ Td1 [(t3 >> 16) & 0xff] ^ Td2 [(t2 >> 8) & 0xff] ^ Td3 [t1 & 0xff] ^ rk [40];
+		s1 = Td0 [t1 >> 24] ^ Td1 [(t0 >> 16) & 0xff] ^ Td2 [(t3 >> 8) & 0xff] ^ Td3 [t2 & 0xff] ^ rk [41];
+		s2 = Td0 [t2 >> 24] ^ Td1 [(t1 >> 16) & 0xff] ^ Td2 [(t0 >> 8) & 0xff] ^ Td3 [t3 & 0xff] ^ rk [42];
+		s3 = Td0 [t3 >> 24] ^ Td1 [(t2 >> 16) & 0xff] ^ Td2 [(t1 >> 8) & 0xff] ^ Td3 [t0 & 0xff] ^ rk [43];
 		/* round 11: */
-		t0 = Td0[s0 >> 24] ^ Td1[(s3 >> 16) & 0xff] ^ Td2[(s2 >> 8) & 0xff] ^ Td3[s1 & 0xff] ^ rk[44];
-		t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >> 8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[45];
-		t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >> 8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[46];
-		t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >> 8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[47];
+		t0 = Td0 [s0 >> 24] ^ Td1 [(s3 >> 16) & 0xff] ^ Td2 [(s2 >> 8) & 0xff] ^ Td3 [s1 & 0xff] ^ rk [44];
+		t1 = Td0 [s1 >> 24] ^ Td1 [(s0 >> 16) & 0xff] ^ Td2 [(s3 >> 8) & 0xff] ^ Td3 [s2 & 0xff] ^ rk [45];
+		t2 = Td0 [s2 >> 24] ^ Td1 [(s1 >> 16) & 0xff] ^ Td2 [(s0 >> 8) & 0xff] ^ Td3 [s3 & 0xff] ^ rk [46];
+		t3 = Td0 [s3 >> 24] ^ Td1 [(s2 >> 16) & 0xff] ^ Td2 [(s1 >> 8) & 0xff] ^ Td3 [s0 & 0xff] ^ rk [47];
 		if (nrounds > 12)
 		{
 			/* round 12: */
-			s0 = Td0[t0 >> 24] ^ Td1[(t3 >> 16) & 0xff] ^ Td2[(t2 >> 8) & 0xff] ^ Td3[t1 & 0xff] ^ rk[48];
-			s1 = Td0[t1 >> 24] ^ Td1[(t0 >> 16) & 0xff] ^ Td2[(t3 >> 8) & 0xff] ^ Td3[t2 & 0xff] ^ rk[49];
-			s2 = Td0[t2 >> 24] ^ Td1[(t1 >> 16) & 0xff] ^ Td2[(t0 >> 8) & 0xff] ^ Td3[t3 & 0xff] ^ rk[50];
-			s3 = Td0[t3 >> 24] ^ Td1[(t2 >> 16) & 0xff] ^ Td2[(t1 >> 8) & 0xff] ^ Td3[t0 & 0xff] ^ rk[51];
+			s0 = Td0 [t0 >> 24] ^ Td1 [(t3 >> 16) & 0xff] ^ Td2 [(t2 >> 8) & 0xff] ^ Td3 [t1 & 0xff] ^ rk [48];
+			s1 = Td0 [t1 >> 24] ^ Td1 [(t0 >> 16) & 0xff] ^ Td2 [(t3 >> 8) & 0xff] ^ Td3 [t2 & 0xff] ^ rk [49];
+			s2 = Td0 [t2 >> 24] ^ Td1 [(t1 >> 16) & 0xff] ^ Td2 [(t0 >> 8) & 0xff] ^ Td3 [t3 & 0xff] ^ rk [50];
+			s3 = Td0 [t3 >> 24] ^ Td1 [(t2 >> 16) & 0xff] ^ Td2 [(t1 >> 8) & 0xff] ^ Td3 [t0 & 0xff] ^ rk [51];
 			/* round 13: */
-			t0 = Td0[s0 >> 24] ^ Td1[(s3 >> 16) & 0xff] ^ Td2[(s2 >> 8) & 0xff] ^ Td3[s1 & 0xff] ^ rk[52];
-			t1 = Td0[s1 >> 24] ^ Td1[(s0 >> 16) & 0xff] ^ Td2[(s3 >> 8) & 0xff] ^ Td3[s2 & 0xff] ^ rk[53];
-			t2 = Td0[s2 >> 24] ^ Td1[(s1 >> 16) & 0xff] ^ Td2[(s0 >> 8) & 0xff] ^ Td3[s3 & 0xff] ^ rk[54];
-			t3 = Td0[s3 >> 24] ^ Td1[(s2 >> 16) & 0xff] ^ Td2[(s1 >> 8) & 0xff] ^ Td3[s0 & 0xff] ^ rk[55];
+			t0 = Td0 [s0 >> 24] ^ Td1 [(s3 >> 16) & 0xff] ^ Td2 [(s2 >> 8) & 0xff] ^ Td3 [s1 & 0xff] ^ rk [52];
+			t1 = Td0 [s1 >> 24] ^ Td1 [(s0 >> 16) & 0xff] ^ Td2 [(s3 >> 8) & 0xff] ^ Td3 [s2 & 0xff] ^ rk [53];
+			t2 = Td0 [s2 >> 24] ^ Td1 [(s1 >> 16) & 0xff] ^ Td2 [(s0 >> 8) & 0xff] ^ Td3 [s3 & 0xff] ^ rk [54];
+			t3 = Td0 [s3 >> 24] ^ Td1 [(s2 >> 16) & 0xff] ^ Td2 [(s1 >> 8) & 0xff] ^ Td3 [s0 & 0xff] ^ rk [55];
 		}
 	}
 	rk += nrounds << 2;
@@ -1260,56 +1260,56 @@ void BuiltInEncryption::rijndaelDecrypt (const u32 * rk, int nrounds, const u8 c
 	for (;;)
 	{
 		t0 =
-			Td0[(s0 >> 24)] ^
-			Td1[(s3 >> 16) & 0xff] ^
-			Td2[(s2 >> 8) & 0xff] ^
-			Td3[(s1) & 0xff] ^
-			rk[4];
+			Td0 [(s0 >> 24)] ^
+			Td1 [(s3 >> 16) & 0xff] ^
+			Td2 [(s2 >> 8) & 0xff] ^
+			Td3 [(s1) & 0xff] ^
+			rk [4];
 		t1 =
-			Td0[(s1 >> 24)] ^
-			Td1[(s0 >> 16) & 0xff] ^
-			Td2[(s3 >> 8) & 0xff] ^
-			Td3[(s2) & 0xff] ^
-			rk[5];
+			Td0 [(s1 >> 24)] ^
+			Td1 [(s0 >> 16) & 0xff] ^
+			Td2 [(s3 >> 8) & 0xff] ^
+			Td3 [(s2) & 0xff] ^
+			rk [5];
 		t2 =
-			Td0[(s2 >> 24)] ^
-			Td1[(s1 >> 16) & 0xff] ^
-			Td2[(s0 >> 8) & 0xff] ^
-			Td3[(s3) & 0xff] ^
-			rk[6];
+			Td0 [(s2 >> 24)] ^
+			Td1 [(s1 >> 16) & 0xff] ^
+			Td2 [(s0 >> 8) & 0xff] ^
+			Td3 [(s3) & 0xff] ^
+			rk [6];
 		t3 =
-			Td0[(s3 >> 24)] ^
-			Td1[(s2 >> 16) & 0xff] ^
-			Td2[(s1 >> 8) & 0xff] ^
-			Td3[(s0) & 0xff] ^
-			rk[7];
+			Td0 [(s3 >> 24)] ^
+			Td1 [(s2 >> 16) & 0xff] ^
+			Td2 [(s1 >> 8) & 0xff] ^
+			Td3 [(s0) & 0xff] ^
+			rk [7];
 		rk += 8;
 		if (--r == 0)
 			break;
 		s0 =
-			Td0[(t0 >> 24)] ^
-			Td1[(t3 >> 16) & 0xff] ^
-			Td2[(t2 >> 8) & 0xff] ^
-			Td3[(t1) & 0xff] ^
-			rk[0];
+			Td0 [(t0 >> 24)] ^
+			Td1 [(t3 >> 16) & 0xff] ^
+			Td2 [(t2 >> 8) & 0xff] ^
+			Td3 [(t1) & 0xff] ^
+			rk [0];
 		s1 =
-			Td0[(t1 >> 24)] ^
-			Td1[(t0 >> 16) & 0xff] ^
-			Td2[(t3 >> 8) & 0xff] ^
-			Td3[(t2) & 0xff] ^
-			rk[1];
+			Td0 [(t1 >> 24)] ^
+			Td1 [(t0 >> 16) & 0xff] ^
+			Td2 [(t3 >> 8) & 0xff] ^
+			Td3 [(t2) & 0xff] ^
+			rk [1];
 		s2 =
-			Td0[(t2 >> 24)] ^
-			Td1[(t1 >> 16) & 0xff] ^
-			Td2[(t0 >> 8) & 0xff] ^
-			Td3[(t3) & 0xff] ^
-			rk[2];
+			Td0 [(t2 >> 24)] ^
+			Td1 [(t1 >> 16) & 0xff] ^
+			Td2 [(t0 >> 8) & 0xff] ^
+			Td3 [(t3) & 0xff] ^
+			rk [2];
 		s3 =
-			Td0[(t3 >> 24)] ^
-			Td1[(t2 >> 16) & 0xff] ^
-			Td2[(t1 >> 8) & 0xff] ^
-			Td3[(t0) & 0xff] ^
-			rk[3];
+			Td0 [(t3 >> 24)] ^
+			Td1 [(t2 >> 16) & 0xff] ^
+			Td2 [(t1 >> 8) & 0xff] ^
+			Td3 [(t0) & 0xff] ^
+			rk [3];
 	}
 #endif /* ?FULL_UNROLL */
 	/*
@@ -1317,31 +1317,31 @@ void BuiltInEncryption::rijndaelDecrypt (const u32 * rk, int nrounds, const u8 c
 	* map cipher state to byte array block:
 	*/
 	s0 =
-		(Td4[(t0 >> 24)] & 0xff000000) ^
-		(Td4[(t3 >> 16) & 0xff] & 0x00ff0000) ^
-		(Td4[(t2 >> 8) & 0xff] & 0x0000ff00) ^
-		(Td4[(t1) & 0xff] & 0x000000ff) ^
-		rk[0];
+		(Td4 [(t0 >> 24)] & 0xff000000) ^
+		(Td4 [(t3 >> 16) & 0xff] & 0x00ff0000) ^
+		(Td4 [(t2 >> 8) & 0xff] & 0x0000ff00) ^
+		(Td4 [(t1) & 0xff] & 0x000000ff) ^
+		rk [0];
 	PUTU32 (plaintext, s0);
 	s1 =
-		(Td4[(t1 >> 24)] & 0xff000000) ^
-		(Td4[(t0 >> 16) & 0xff] & 0x00ff0000) ^
-		(Td4[(t3 >> 8) & 0xff] & 0x0000ff00) ^
-		(Td4[(t2) & 0xff] & 0x000000ff) ^
-		rk[1];
+		(Td4 [(t1 >> 24)] & 0xff000000) ^
+		(Td4 [(t0 >> 16) & 0xff] & 0x00ff0000) ^
+		(Td4 [(t3 >> 8) & 0xff] & 0x0000ff00) ^
+		(Td4 [(t2) & 0xff] & 0x000000ff) ^
+		rk [1];
 	PUTU32 (plaintext + 4, s1);
 	s2 =
-		(Td4[(t2 >> 24)] & 0xff000000) ^
-		(Td4[(t1 >> 16) & 0xff] & 0x00ff0000) ^
-		(Td4[(t0 >> 8) & 0xff] & 0x0000ff00) ^
-		(Td4[(t3) & 0xff] & 0x000000ff) ^
-		rk[2];
+		(Td4 [(t2 >> 24)] & 0xff000000) ^
+		(Td4 [(t1 >> 16) & 0xff] & 0x00ff0000) ^
+		(Td4 [(t0 >> 8) & 0xff] & 0x0000ff00) ^
+		(Td4 [(t3) & 0xff] & 0x000000ff) ^
+		rk [2];
 	PUTU32 (plaintext + 8, s2);
 	s3 =
-		(Td4[(t3 >> 24)] & 0xff000000) ^
-		(Td4[(t2 >> 16) & 0xff] & 0x00ff0000) ^
-		(Td4[(t1 >> 8) & 0xff] & 0x0000ff00) ^
-		(Td4[(t0) & 0xff] & 0x000000ff) ^
-		rk[3];
+		(Td4 [(t3 >> 24)] & 0xff000000) ^
+		(Td4 [(t2 >> 16) & 0xff] & 0x00ff0000) ^
+		(Td4 [(t1 >> 8) & 0xff] & 0x0000ff00) ^
+		(Td4 [(t0) & 0xff] & 0x000000ff) ^
+		rk [3];
 	PUTU32 (plaintext + 12, s3);
 }

@@ -1,4 +1,5 @@
 ﻿/*********************************************************************************************
+*	Project		: https://github.com/IgnacioPomar/libOS
 *	Name		: SourceBuiltInEncryption_Base64.cpp
 *	Description	: Base64 algoritm in case crypto++  not found
 *	Based On	: https://stackoverflow.com/a/34571089/74785
@@ -13,8 +14,8 @@
 //-------------------------------------------------------------------------------
 // Builtin implementation of a base64 encode/decode algorithm
 
-constexpr const char * base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";// (pad) =
-constexpr const char * base64urlAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";// (pad) =
+constexpr const char* base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";// (pad) =
+constexpr const char* base64urlAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";// (pad) =
 
 /*
  Lookup table compatible for both alphabets.
@@ -29,7 +30,7 @@ constexpr const char * base64urlAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij
 		for (int x : B64index)	{printf ("%s%d", sep, x); if (++i == 32) {i = 0;sep = ", \n";} else sep = ", ";}
 */
 
-constexpr signed char B64index[256] = {
+constexpr signed char B64index [256] = {
 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, 62, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
 -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, 63,
@@ -46,11 +47,11 @@ constexpr signed char B64index[256] = {
 * \param    [in]   in
 * \return
 */
-std::string BuiltInEncryption::base64Encode (const std::string & in, bool useBase64url)
+std::string BuiltInEncryption::base64Encode (const std::string& in, bool useBase64url)
 {
 	std::string out;
 
-	const char * alphabet = (useBase64url) ? base64urlAlphabet : base64Alphabet;
+	const char* alphabet = (useBase64url) ? base64urlAlphabet : base64Alphabet;
 
 	int val = 0, valb = -6;
 	for (unsigned char c : in)
@@ -59,14 +60,14 @@ std::string BuiltInEncryption::base64Encode (const std::string & in, bool useBas
 		valb += 8;
 		while (valb >= 0)
 		{
-			out.push_back (alphabet[(val >> valb) & 0x3F]);
+			out.push_back (alphabet [(val >> valb) & 0x3F]);
 			valb -= 6;
 		}
 	}
 
 	if (valb > -6)
 	{
-		out.push_back (alphabet[((val << 8) >> (valb + 8)) & 0x3F]);
+		out.push_back (alphabet [((val << 8) >> (valb + 8)) & 0x3F]);
 	}
 
 	// We can be skipp the padding as stated in the section 3.2.
@@ -83,15 +84,17 @@ std::string BuiltInEncryption::base64Encode (const std::string & in, bool useBas
 * \param    [in]   in
 * \return
 */
-std::string BuiltInEncryption::base64Decode (const std::string & in)
+std::string BuiltInEncryption::base64Decode (const std::string& in)
 {
 	std::string out;
 	int val = 0, valb = -8;
-	for (unsigned char c : in) {
-		if (B64index[c] == -1) break;
-		val = (val << 6) + B64index[c];
+	for (unsigned char c : in)
+	{
+		if (B64index [c] == -1) break;
+		val = (val << 6) + B64index [c];
 		valb += 6;
-		if (valb >= 0) {
+		if (valb >= 0)
+		{
 			out.push_back (char ((val >> valb) & 0xFF));
 			valb -= 8;
 		}
