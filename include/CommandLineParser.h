@@ -15,14 +15,12 @@ Currently suports the following formats
 Windows like options (ie. dir /a c:\path)
 GNU like long options (ie. du --human-readable --max-depth=1)
 long options with single hyphen (ie. ant -projecthelp)
+Short options with value attached (ie. gcc -O2 foo.c)
 
 
 //YAGNI: may be in the future suport for this formats
 POSIX like options (ie. tar -zxvf foo.tar.gz)
-Short options with value attached (ie. gcc -O2 foo.c)
 */
-
-
 
 
 class CommandLineParserPrivateData;
@@ -31,8 +29,13 @@ class Option;
 class LIBOS_API CommandLineParser
 {
 public:
+	//Strict mode means the parse will fail if an option is not recognized
 	CommandLineParser (bool isStrictMode = false);
 	~CommandLineParser ();
+
+	//Set the header and footer for the help message
+	void setHeader (const char* header);
+	void setFooter (const char* footer);
 
 	void addOption (const char* opt, const char* longOpt, const char* description, bool isRequired = false, int args = 0);
 

@@ -108,6 +108,9 @@ class LIBOS_LOCAL CommandLineParserPrivateData
 public:
 	bool isStrictMode = false;
 
+	std::string header;
+	std::string footer;
+
 	const char* argv_0 = "";
 	bool hasNotExpectedOpts = false;
 	std::list<Option> options;
@@ -160,6 +163,16 @@ CommandLineParser::CommandLineParser (bool isStrictMode)
 CommandLineParser::~CommandLineParser ()
 {
 	delete this->pd;
+}
+
+void CommandLineParser::setHeader (const char* header)
+{
+	this->pd->header = header;
+}
+
+void CommandLineParser::setFooter (const char* footer)
+{
+	this->pd->footer = footer;
 }
 
 
@@ -355,6 +368,7 @@ bool CommandLineParser::checkOptions ()
  */
 void CommandLineParser::printHelp ()
 {
+	std::cout << pd->header << std::endl;
 	std::cout << "usage: " << pd->argv_0 << std::endl;
 
 	//To prety format, we search the max length
@@ -405,6 +419,8 @@ void CommandLineParser::printHelp ()
 		//description
 		std::cout << opt.description << std::endl;
 	}
+
+	std::cout << pd->footer << std::endl;
 }
 
 
